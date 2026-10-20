@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fbf6f7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#171014" media="(prefers-color-scheme: dark)" />
+  <title>Ivanka — AI & Automation Engineer</title>
+  <meta name="description" content="Ivanka is an AI, automation and prompt engineer who builds prompts, agents and workflows that quietly do the busywork." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    document.documentElement.classList.remove("no-js");
+    try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (_) {}
+  </script>
+</head>
+<body>
+  <div class="stripe" aria-hidden="true"></div>
+
+  <!-- ───────── Header ───────── -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="Ivanka, home">
+        <svg class="mark" width="28" height="28" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><polygon points="26,9 29.5,22.5 43,26 29.5,29.5 26,43 22.5,29.5 9,26 22.5,22.5"/></svg>
+        <span>Ivanka</span>
+      </a>
+      <nav class="nav" aria-label="Pages">
+        <a href="projects.html">Projects</a>
+        <a href="tools.html">Tools</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="search-trigger" type="button" data-cmd-open aria-label="Open command menu">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>Search…</span>
+          <kbd class="kbd">⌘K</kbd>
+        </button>
+        <div class="menu-wrap">
+        <button class="btn btn-ghost btn-icon" id="themeToggle" type="button" aria-label="Change theme" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">
+          <svg class="i-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="menu" id="themeMenu" role="menu" aria-label="Theme" hidden>
+          <button type="button" role="menuitemradio" data-theme-set="light" aria-checked="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>Light</button>
+          <button type="button" role="menuitemradio" data-theme-set="dark" aria-checked="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>Dark</button>
+          <button type="button" role="menuitemradio" data-theme-set="system" aria-checked="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>System</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ───────── Hero ───────── -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="ident reveal">
+          <span class="label">AI · Automation · Prompt engineering</span>
+          <h1>Hi, I'm <em>Ivanka</em>.</h1>
+          <p class="tagline">Prompts, agents and workflows that steer the busywork home.</p>
+          <p class="story">
+            <em>Tala</em> is the morning star sailors steered by. I build the same kind of
+            thing for teams: LLMs that classify, extract and draft, automations that
+            connect the tools they already use, and evals that keep it all on course
+            after it ships.
+          </p>
+          <ul class="principles">
+            <li><b>Prompts</b><span>Versioned, tested, rewritten until the edge cases pass.</span></li>
+            <li><b>Agents</b><span>Useful on their own, with a human approving what matters.</span></li>
+            <li><b>Evals</b><span>If I can't measure a prompt, I can't improve it.</span></li>
+          </ul>
+          <div class="cta">
+            <a href="projects.html" class="btn btn-default">See my work</a>
+            <a href="#contact" class="btn btn-outline">Get in touch</a>
+          </div>
+        </div>
+
+        <div class="specs reveal">
+          <div class="card profile">
+            <div class="avatar"><img src="assets/me.jpeg" alt="Portrait of Ivanka" width="64" height="64" /></div>
+            <div class="profile-meta">
+              <span class="profile-name">Ivanka</span>
+              <span class="profile-loc">
+                <span id="location">Your City, XX</span> · <time id="clock">--:--</time>
+              </span>
+            </div>
+            <span class="badge badge-pandan"><span class="status-dot" aria-hidden="true"></span>Available for freelance</span>
+          </div>
+
+          <div class="card app">
+            <div class="app-top">
+              <div class="app-brand">
+                <svg class="mark" width="18" height="18" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><polygon points="26,9 29.5,22.5 43,26 29.5,29.5 26,43 22.5,29.5 9,26 22.5,22.5"/></svg>
+                Prompt Garden
+              </div>
+              <div class="seg" role="group" aria-label="Prompt version">
+                <button type="button" data-v="v3" aria-pressed="false">v3</button>
+                <button type="button" data-v="v9" aria-pressed="true">v9</button>
+              </div>
+            </div>
+            <div class="app-body">
+              <div>
+                <span class="label">Currently prompting</span>
+                <p class="prompt-line" id="promptTicker">You are a calm, precise assistant…</p>
+              </div>
+              <div class="metrics">
+                <div class="metric">
+                  <div class="k">Eval pass rate</div>
+                  <div class="v" id="passRate">95<small>%</small></div>
+                  <div class="d" id="passDelta">+13 pts since v3</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Pass rate by prompt version</div>
+                  <svg class="spark" viewBox="0 0 240 64" preserveAspectRatio="none" aria-hidden="true"></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-content">
+            <p class="label" style="margin-bottom:12px">Palette · Tala Rosa</p>
+            <div class="swatches">
+              <div class="sw"><i style="background:var(--background)"></i><em>Kabibe</em><span class="muted">shell</span></div>
+              <div class="sw"><i style="background:var(--primary)"></i><em>Rosas</em><span class="muted">primary</span></div>
+              <div class="sw"><i style="background:var(--accent)"></i><em>Mangga</em><span class="muted">accent</span></div>
+              <div class="sw"><i style="background:var(--ube)"></i><em>Ube</em><span class="muted">support</span></div>
+              <div class="sw"><i style="background:var(--pandan)"></i><em>Pandan</em><span class="muted">status</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Gists ───────── -->
+    <section class="section reveal" id="gists">
+      <div class="section-head">
+        <div>
+          <span class="label">Extra gists</span>
+          <h2>How I work</h2>
+        </div>
+      </div>
+      <ul class="gists">
+        <li class="card gist">
+          <span class="gist-icon" style="background:var(--s2)" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </span>
+          <h3 class="card-title">Prompts are code</h3>
+          <p>Versioned, tested against real examples, and rewritten until they work on the edge cases too.</p>
+        </li>
+        <li class="card gist">
+          <span class="gist-icon" style="background:var(--ube)" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4a3 3 0 0 1 3 3V14"/></svg>
+          </span>
+          <h3 class="card-title">No-code, then code</h3>
+          <p>I build in <b>n8n</b>, <b>Make</b> and <b>Zapier</b>, and write <b>Python</b> or <b>JS</b> when no-code runs out.</p>
+        </li>
+        <li class="card gist">
+          <span class="gist-icon" style="background:var(--pandan)" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+          </span>
+          <h3 class="card-title">Evals or it didn't happen</h3>
+          <p>Every prompt gets an eval set before it goes anywhere near production.</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ───────── Selected work ───────── -->
+    <section class="section reveal" id="projects">
+      <div class="section-head">
+        <div>
+          <span class="label">Selected work</span>
+          <h2>Things I've built</h2>
+        </div>
+        <a href="projects.html" class="btn btn-outline btn-sm">All projects →</a>
+      </div>
+      <ul class="pgrid">
+        <li>
+          <a href="projects.html" class="card">
+            <div class="shot tint-rosas" aria-hidden="true">
+              <div class="shot-bar"><i></i><i></i><i></i></div>
+              <div class="shot-body"><b>›</b> new email from jo@acme.co<br />&nbsp;&nbsp;label: <span class="ok">billing</span> · priority: high<br />&nbsp;&nbsp;draft ready → waiting for approval</div>
+            </div>
+            <div class="card-header">
+              <div class="pcard-head"><h3 class="card-title">Inbox Triage Agent</h3><span class="arrow" aria-hidden="true">↗</span></div>
+              <p class="card-description">Sorts, tags and drafts replies for a support inbox, with a human approving each one. Cut first-response time by 60%.</p>
+            </div>
+            <div class="card-content badges"><span class="badge badge-outline">LLM agents</span><span class="badge badge-outline">n8n</span><span class="badge badge-outline">Gmail API</span></div>
+          </a>
+        </li>
+        <li>
+          <a href="projects.html" class="card">
+            <div class="shot tint-ube" aria-hidden="true">
+              <div class="shot-bar"><i></i><i></i><i></i></div>
+              <div class="shot-body"><b>summarise.prompt</b> &nbsp;v3 → v4<br />&nbsp;&nbsp;accuracy &nbsp;82% → <span class="ok">91%</span><br />&nbsp;&nbsp;regressions <span class="ok">0</span></div>
+            </div>
+            <div class="card-header">
+              <div class="pcard-head"><h3 class="card-title">Prompt Garden</h3><span class="arrow" aria-hidden="true">↗</span></div>
+              <p class="card-description">A versioned prompt library with side-by-side evals, so teams can see whether a change actually helped.</p>
+            </div>
+            <div class="card-content badges"><span class="badge badge-outline">Prompt eng.</span><span class="badge badge-outline">Evals</span><span class="badge badge-outline">TypeScript</span></div>
+          </a>
+        </li>
+        <li>
+          <a href="projects.html" class="card">
+            <div class="shot tint-pandan" aria-hidden="true">
+              <div class="shot-bar"><i></i><i></i><i></i></div>
+              <div class="shot-body"><b>Q:</b> how many vacation days do I get?<br /><b>A:</b> 25 days a year, plus public holidays.<br />&nbsp;&nbsp;<span class="ok">[1]</span> handbook/time-off.md §2</div>
+            </div>
+            <div class="card-header">
+              <div class="pcard-head"><h3 class="card-title">Docs Whisperer</h3><span class="arrow" aria-hidden="true">↗</span></div>
+              <p class="card-description">A RAG assistant over internal docs that answers with citations and says "I don't know" when it doesn't.</p>
+            </div>
+            <div class="card-content badges"><span class="badge badge-outline">RAG</span><span class="badge badge-outline">Vector DB</span><span class="badge badge-outline">Python</span></div>
+          </a>
+        </li>
+        <li>
+          <a href="projects.html" class="card">
+            <div class="shot tint-mangga" aria-hidden="true">
+              <div class="shot-bar"><i></i><i></i><i></i></div>
+              <div class="shot-body">webhook <b>→</b> enrich <b>→</b> score <b>→</b> route<br />&nbsp;&nbsp;lead: Dana P. · score <span class="ok">87</span><br />&nbsp;&nbsp;done in 3.2s</div>
+            </div>
+            <div class="card-header">
+              <div class="pcard-head"><h3 class="card-title">Lead → CRM Pipeline</h3><span class="arrow" aria-hidden="true">↗</span></div>
+              <p class="card-description">Form submissions get enriched, scored by an LLM and sent to the right salesperson within seconds.</p>
+            </div>
+            <div class="card-content badges"><span class="badge badge-outline">Make</span><span class="badge badge-outline">Webhooks</span><span class="badge badge-outline">HubSpot</span></div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ───────── Toolbox ───────── -->
+    <section class="section reveal" id="skills">
+      <div class="section-head">
+        <div>
+          <span class="label">Toolbox</span>
+          <h2>What I reach for</h2>
+        </div>
+        <a href="tools.html" class="btn btn-outline btn-sm">Full toolbox →</a>
+      </div>
+      <div class="badges">
+        <span class="badge badge-rosas">Prompt engineering</span>
+        <span class="badge badge-ube">LLM agents</span>
+        <span class="badge badge-pandan">RAG</span>
+        <span class="badge badge-mangga">Evals</span>
+        <span class="badge badge-langit">Claude & OpenAI APIs</span>
+        <span class="badge badge-rosas">n8n</span>
+        <span class="badge badge-ube">Make</span>
+        <span class="badge badge-pandan">Zapier</span>
+        <span class="badge badge-mangga">Python</span>
+        <span class="badge badge-langit">JavaScript</span>
+        <span class="badge badge-rosas">Vector databases</span>
+        <span class="badge badge-ube">Webhooks & APIs</span>
+      </div>
+    </section>
+
+    <!-- ───────── About + socials ───────── -->
+    <section class="section reveal" id="about">
+      <div class="row2">
+        <div class="card">
+          <div class="card-header">
+            <span class="label">About me</span>
+            <h2 class="card-title">A bit lazy, in the useful way</h2>
+          </div>
+          <div class="card-content about">
+            <p class="muted">Anything I've done three times, I want a machine to do. That turned into a career designing how people and AI work together.</p>
+            <p class="muted">Away from the keyboard: matcha, film photography, long walks, and a growing pile of half-read books. (I also touch grass, promise.)</p>
+          </div>
+        </div>
+
+        <div class="card" id="social">
+          <div class="card-header" style="padding-bottom:14px">
+            <span class="label">Social dump</span>
+            <h2 class="card-title">Find me elsewhere</h2>
+          </div>
+          <hr class="separator" />
+          <ul class="social-list">
+            <li><a href="https://github.com/" target="_blank" rel="noopener"><span class="name">GitHub</span><span class="muted">workflows, prompts & experiments ↗</span></a></li>
+            <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener"><span class="name">LinkedIn</span><span class="muted">the professional version ↗</span></a></li>
+            <li><a href="https://x.com/" target="_blank" rel="noopener"><span class="name">X / Twitter</span><span class="muted">half-baked AI thoughts ↗</span></a></li>
+            <li><a href="https://www.upwork.com/" target="_blank" rel="noopener"><span class="name">Upwork</span><span class="muted">hire me for a project ↗</span></a></li>
+            <li><a href="https://contra.com/" target="_blank" rel="noopener"><span class="name">Contra</span><span class="muted">freelance profile ↗</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Contact ───────── -->
+    <section class="section reveal" id="contact">
+      <div class="card contact">
+        <div class="stripe" aria-hidden="true"></div>
+        <div>
+          <span class="label">Want to connect?</span>
+          <h2>Got busywork that needs automating?</h2>
+          <p>Or a prompt that isn't behaving. Email is the easiest way to reach me, and I usually reply within a day.</p>
+        </div>
+        <div class="email-field">
+          <a href="mailto:hello@example.com" class="btn btn-default" data-email-link>Email me</a>
+          <button class="btn btn-outline" type="button" data-copy-email>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            Copy address
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────── Footer ───────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="tools.html">Tools</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <small>© <span id="year"></span> Ivanka · steered by a pink morning star</small>
+    </div>
+  </footer>
+
+  <!-- ───────── Command menu ───────── -->
+  <dialog class="cmd" id="cmd" aria-label="Command menu">
+    <div class="cmd-input-row">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="cmd-input" id="cmdInput" type="text" placeholder="Type a command or search…" autocomplete="off" role="combobox" aria-controls="cmdList" aria-expanded="true" />
+      <kbd class="kbd">esc</kbd>
+    </div>
+    <ul class="cmd-list" id="cmdList" role="listbox"></ul>
+    <div class="cmd-foot"><span><kbd class="kbd">↑↓</kbd> navigate</span><span><kbd class="kbd">↵</kbd> select</span></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
