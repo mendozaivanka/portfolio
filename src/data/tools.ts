@@ -5,7 +5,7 @@ export type ToolGroup = { title: string; description: string; swatch: Swatch; it
 export const setup = [
   { label: "Machine", value: "macOS" },
   { label: "Editor", value: "VS Code + Claude Code" },
-  { label: "Fuel", value: "A lot of matcha" },
+  { label: "Fuel", value: "A lot of coffee" },
 ];
 
 export const toolGroups: ToolGroup[] = [

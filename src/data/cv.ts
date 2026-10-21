@@ -20,12 +20,12 @@ export const cv = {
   profile: {
     fullName: "Ivanka Chaental Louise Mendoza",
     title: "AI & Automation Engineer",
-    location: "Alabang, Muntinlupa, Philippines",
+    location: "Metro Manila, Philippines",
     email: "mendozaivanka@gmail.com",
     // Deliberately not published on the public site. Set it to show it on /cv/.
     phone: null as string | null,
     summary:
-      "AI and Automation Engineer with experience building automated anomaly detection systems, data pipelines and LLM-powered analytics tools. Hands-on with RAG pipelines, fine-tuning local LLMs and integrating models into production workflows, with a track record of cutting manual work and improving system performance. Comfortable in front of clients, supporting analytics and reporting systems.",
+      "Senior AI and Prompt Engineer with expertise in designing, developing, and optimizing enterprise AI solutions, multi-agent workflows, and RAG architectures. Skilled in utilizing platforms such as Amazon SageMaker, Amazon Bedrock, OpenAI, and Anthropic to support the quality assurance of enterprise AI tools. Proficient in Python and LlamaIndex, with a strong track record of leading prompt optimization strategies, implementing responsible AI frameworks, and delivering actionable, data-driven insights to executive stakeholders. Proven ability to translate complex requirements into scalable, maintainable solutions that improve efficiency and reduce manual work.",
     /** Path under public/, or null to hide the download button. */
     pdf: "/Ivanka-Mendoza-CV.pdf" as string | null,
   },

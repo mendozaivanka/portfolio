@@ -4,8 +4,8 @@ export const site = {
   name: "Ivanka",
   role: "AI & Automation Engineer",
   description:
-    "Ivanka Mendoza is an AI, automation and prompt engineer in Metro Manila who builds RAG pipelines, agents and workflows that quietly do the busywork.",
-  location: "Alabang, Muntinlupa",
+    "Ivanka Mendoza is an AI, automation and prompt engineer who builds RAG pipelines, agents and workflows that quietly do the busywork.",
+  location: "Metro Manila",
   // IANA time zone for the header clock. Leave empty to use the visitor's own.
   timeZone: "Asia/Manila",
   email: "mendozaivanka@gmail.com",
@@ -17,9 +17,9 @@ export type Social = { name: string; href: string; note: string };
 export const socials: Social[] = [
   { name: "GitHub", href: "https://github.com/mendozaivanka", note: "workflows, prompts & experiments" },
   { name: "LinkedIn", href: "https://www.linkedin.com/", note: "the professional version" },
-  { name: "X / Twitter", href: "https://x.com/", note: "half-baked AI thoughts" },
-  { name: "Upwork", href: "https://www.upwork.com/", note: "hire me for a project" },
-  { name: "Contra", href: "https://contra.com/", note: "freelance profile" },
+  // { name: "X / Twitter", href: "https://x.com/", note: "half-baked AI thoughts" },
+  // { name: "Upwork", href: "https://www.upwork.com/", note: "hire me for a project" },
+  // { name: "Contra", href: "https://contra.com/", note: "freelance profile" },
 ];
 
 /** Lines that rotate in the "Currently prompting" card. */
