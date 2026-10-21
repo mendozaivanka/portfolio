@@ -252,3 +252,96 @@
   .tier-dot[data-tier="recognised"] { background: var(--tier-recognised); }
   .tier-dot[data-tier="indie"] { border: 2px solid var(--tier-indie); background: transparent; }
 }
+
+/* ───────── Timpla palette: "Kape't Gatas" (coffee with milk) ─────────
+   Applied only where <html data-palette="kape"> (the Timpla pages); the portfolio keeps Tala Rosa.
+   Selectors are more specific than the generated tokens so they win in every theme mode. */
+html[data-palette="kape"] {
+  --background: #f7f1e9;   /* Gatas */
+  --foreground: #2b1d16;   /* Kape */
+  --card: #fffdf9;
+  --card-foreground: #2b1d16;
+  --popover: #fffdf9;
+  --popover-foreground: #2b1d16;
+  --primary: #e8c9a9;      /* Krema */
+  --primary-foreground: #3a2416;
+  --primary-strong: #8b4a26; /* Tostado */
+  --secondary: #efe4d6;
+  --secondary-foreground: #3a2416;
+  --muted: #efe6db;
+  --muted-foreground: #6e5b4e;
+  --accent: #efe6db;
+  --accent-foreground: #2b1d16;
+  --border: #e8ddd0;
+  --input: #a08672;
+  --ring: #8b4a26;
+  --rosas-1: #f4e9dc; --rosas-2: #e8c9a9; --rosas-3: #d6a77e; --rosas-4: #b9774c; --rosas-5: #8b4a26;
+  --gold: #c98b2b;         /* Pulot */
+  --gold-ink: #7a5410;
+  --ube: #e8c9a9;
+  --mark: #8b4a26;
+  --tier-acclaimed: #3b2016; /* Barako */
+  --tier-recognised: #8b4a26;
+  --tier-indie: #8b4a26;
+  --harvest: #3f6e85;      /* slate: clearly apart from the roast brown */
+}
+html[data-palette="kape"][data-theme="dark"] {
+  --background: #1a1310;   /* Gabi */
+  --foreground: #f3e9df;
+  --card: #241b16;
+  --card-foreground: #f3e9df;
+  --popover: #241b16;
+  --popover-foreground: #f3e9df;
+  --primary: #d9b08a;
+  --primary-foreground: #1a1310;
+  --primary-strong: #e2a47a;
+  --secondary: #2f241e;
+  --secondary-foreground: #f3e9df;
+  --muted: #2b211b;
+  --muted-foreground: #bba795;
+  --accent: #2f241e;
+  --accent-foreground: #f3e9df;
+  --border: #3a2d25;
+  --input: #8a7462;
+  --ring: #e2a47a;
+  --rosas-1: #2b211b; --rosas-2: #4a3426; --rosas-3: #7a5236; --rosas-4: #b9774c; --rosas-5: #e2a47a;
+  --gold: #e0a94a;
+  --gold-ink: #e8c27a;
+  --ube: #4a3426;
+  --mark: #8b4a26;
+  --tier-acclaimed: #f0c9a4;
+  --tier-recognised: #b9774c;
+  --tier-indie: #f0c9a4;
+  --harvest: #8fb8cc;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-palette="kape"]:not([data-theme="light"]) {
+    --background: #1a1310;
+    --foreground: #f3e9df;
+    --card: #241b16;
+    --card-foreground: #f3e9df;
+    --popover: #241b16;
+    --popover-foreground: #f3e9df;
+    --primary: #d9b08a;
+    --primary-foreground: #1a1310;
+    --primary-strong: #e2a47a;
+    --secondary: #2f241e;
+    --secondary-foreground: #f3e9df;
+    --muted: #2b211b;
+    --muted-foreground: #bba795;
+    --accent: #2f241e;
+    --accent-foreground: #f3e9df;
+    --border: #3a2d25;
+    --input: #8a7462;
+    --ring: #e2a47a;
+    --rosas-1: #2b211b; --rosas-2: #4a3426; --rosas-3: #7a5236; --rosas-4: #b9774c; --rosas-5: #e2a47a;
+    --gold: #e0a94a;
+    --gold-ink: #e8c27a;
+    --ube: #4a3426;
+    --mark: #8b4a26;
+    --tier-acclaimed: #f0c9a4;
+    --tier-recognised: #b9774c;
+    --tier-indie: #f0c9a4;
+    --harvest: #8fb8cc;
+  }
+}

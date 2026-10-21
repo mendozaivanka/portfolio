@@ -126,6 +126,7 @@ const points = shopList.flatMap((s) =>
   s.branches.filter((b: any) => b.lat != null).map((b: any) => ({
     slug: s.slug, name: s.name, branch: b.name, tier: s.tier, city: b.city, nb: b.neighbourhood,
     type: s.type, own: s.ownership === "foreign brand" ? "foreign" : "local",
+    beans: (s.beans.split(/[;(]/)[0] || "").trim().slice(0, 48), since: s.since,
     lon: b.lon, lat: b.lat, xy: project(b.lon, b.lat),
   })),
 );

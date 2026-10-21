@@ -9,24 +9,43 @@ import { cn } from "@/lib/utils";
 
 setWorkerUrl(workerUrl);
 
-/* Basemap: OpenFreeMap (free, no API key), tinted towards Tala Rosa. */
+/* Basemap: OpenFreeMap (free, no API key), tinted towards the Kape't Gatas palette. */
 const STYLE = { light: "https://tiles.openfreemap.org/styles/positron", dark: "https://tiles.openfreemap.org/styles/dark" };
 const TINT = {
-  light: { background: "#fbf6f7", water: "#dfe8f1", park: "#e8efe9", building: "#f3eaed" },
-  dark: { background: "#171014", water: "#1e2731", park: "#1f2622", building: "#241b20" },
+  light: { background: "#f7f1e9", water: "#dde6ea", park: "#e7ebdf", building: "#efe5d9" },
+  dark: { background: "#1a1310", water: "#1c252b", park: "#1f231b", building: "#261d17" },
 };
 const TIER = {
-  light: { acclaimed: "#7a2a49", recognised: "#b04a6f", indie: "#b04a6f", ring: "#ffffff" },
-  dark: { acclaimed: "#f2a3bc", recognised: "#b55f80", indie: "#f2a3bc", ring: "#171014" },
+  light: { acclaimed: "#3b2016", recognised: "#8b4a26", indie: "#8b4a26", ring: "#ffffff" },
+  dark: { acclaimed: "#f0c9a4", recognised: "#b9774c", indie: "#f0c9a4", ring: "#1a1310" },
 };
 
 export type MapPoint = {
   slug: string; name: string; branch: string; tier: "acclaimed" | "recognised" | "indie";
-  city: string; nb: string; lon: number; lat: number;
+  city: string; nb: string; lon: number; lat: number; beans?: string; since?: string;
 };
 
 type TierFilter = "all" | MapPoint["tier"];
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+/** The details card shown on hover (no link) and on click/tap (with the link). */
+function cardHtml(p: MapPoint, withLink: boolean) {
+  const row = (k: string, v: string) =>
+    v ? `<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:#6f6066">${k}</span><span style="text-align:right">${esc(v)}</span></div>` : "";
+  const rule = `<div style="border-top:1.5px dashed #d9cfd2;margin:6px 0"></div>`;
+  return (
+    `<div style="font:13px/1.5 'DM Mono',monospace;color:#2b2226;min-width:200px">` +
+    `<div style="font:500 18px/1.2 Newsreader,serif;margin-bottom:2px">${esc(p.name)}</div>` +
+    (p.branch ? `<div style="font:13px Figtree,sans-serif;color:#6f6066">${esc(p.branch)}</div>` : "") +
+    rule +
+    row("WHERE", [p.nb, p.city].filter((x, i, a) => x && a.indexOf(x) === i).join(", ")) +
+    row("SINCE", p.since || "") +
+    row("BEANS", p.beans || "") +
+    row("TIER", p.tier) +
+    (withLink ? rule + `<a href="/timpla/cafes/${esc(p.slug)}/" style="font:600 14px Figtree,sans-serif;color:#8b4a26">Open the receipt →</a>` : "") +
+    `</div>`
+  );
+}
 
 export default function CafeMap({ points }: { points: MapPoint[] }) {
   const box = useRef<HTMLDivElement>(null);
@@ -72,7 +91,12 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
           type: "geojson",
           data: {
             type: "FeatureCollection",
-            features: points.map((p) => ({ type: "Feature", geometry: { type: "Point", coordinates: [p.lon, p.lat] }, properties: p })),
+            features: points.map((p) => ({
+              type: "Feature",
+              geometry: { type: "Point", coordinates: [p.lon, p.lat] },
+              // Short label for the map; the hover card keeps the full name
+              properties: { ...p, label: p.name.replace(/\s*\(.*?\)\s*/g, " ").trim() },
+            })),
           },
         });
         m.addLayer({
@@ -86,28 +110,56 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
             "circle-stroke-width": ["match", ["get", "tier"], "indie", 2.2, 1.5],
           },
         });
+        // Café names beside the dots. MapLibre hides labels that would collide, so more appear as you zoom in;
+        // acclaimed cafés get first claim on the space.
+        m.addLayer({
+          id: "cafe-labels",
+          type: "symbol",
+          source: "cafes",
+          layout: {
+            "text-field": ["get", "label"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": ["interpolate", ["linear"], ["zoom"], 10, 11, 15, 13],
+            "text-anchor": "left",
+            "text-offset": [0.75, 0],
+            "text-max-width": 9,
+            "text-optional": true,
+            "symbol-sort-key": ["match", ["get", "tier"], "acclaimed", 0, "recognised", 1, 2],
+          },
+          paint: {
+            "text-color": scheme === "dark" ? "#f3e9df" : "#2b1d16",
+            "text-halo-color": scheme === "dark" ? "#1a1310" : "#fffdf9",
+            "text-halo-width": 1.6,
+          },
+        });
         applyFilter(m, tierRef.current);
         if (!center) {
           const b = new LngLatBounds();
           points.forEach((p) => b.extend([p.lon, p.lat]));
           m.fitBounds(b, { padding: 48, duration: 0, maxZoom: 14 });
         }
-        m.on("click", "cafes", (e) => {
-          const f = e.features?.[0];
-          if (!f) return;
-          const p = f.properties as unknown as MapPoint;
-          new Popup({ offset: 10, maxWidth: "260px" })
-            .setLngLat((f.geometry as unknown as { coordinates: [number, number] }).coordinates)
-            .setHTML(
-              `<div style="font:14px/1.45 Figtree,sans-serif;color:#2e1d24"><b style="font:500 17px Newsreader,serif">${esc(p.name)}</b>` +
-                (p.branch ? `<br><span style="color:#6b5a61">${esc(p.branch)}</span>` : "") +
-                `<br><span style="color:#6b5a61">${esc([p.nb, p.city].filter(Boolean).join(", "))} · ${esc(p.tier)}</span>` +
-                `<br><a href="/timpla/cafes/${esc(p.slug)}/" style="color:#b04a6f;font-weight:600">Open the receipt →</a></div>`,
-            )
-            .addTo(m);
-        });
-        m.on("mouseenter", "cafes", () => (m.getCanvas().style.cursor = "pointer"));
-        m.on("mouseleave", "cafes", () => (m.getCanvas().style.cursor = ""));
+        // Hover (mouse): a light card with the details follows the pointer.
+        // Click / tap (and touch screens): the card stays, with a link to the café's page.
+        const hover = new Popup({ offset: 12, maxWidth: "280px", closeButton: false, closeOnClick: false });
+        const coordsOf = (f: { geometry: unknown }) => (f.geometry as { coordinates: [number, number] }).coordinates;
+        for (const layer of ["cafes", "cafe-labels"]) {
+          m.on("mousemove", layer, (e) => {
+            const f = e.features?.[0];
+            if (!f) return;
+            m.getCanvas().style.cursor = "pointer";
+            hover.setLngLat(coordsOf(f)).setHTML(cardHtml(f.properties as unknown as MapPoint, false)).addTo(m);
+          });
+          m.on("mouseleave", layer, () => {
+            m.getCanvas().style.cursor = "";
+            hover.remove();
+          });
+          m.on("click", layer, (e) => {
+            const f = e.features?.[0];
+            if (!f) return;
+            hover.remove();
+            new Popup({ offset: 12, maxWidth: "280px" }).setLngLat(coordsOf(f)).setHTML(cardHtml(f.properties as unknown as MapPoint, true)).addTo(m);
+          });
+        }
       });
       if (reduced) map.on("load", () => map?.jumpTo({ center: map.getCenter() }));
     };
@@ -161,4 +213,5 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
 function applyFilter(m: MapLibreMap, tier: TierFilter) {
   const f: ExpressionSpecification | null = tier === "all" ? null : ["==", ["get", "tier"], tier];
   m.setFilter("cafes", f);
+  if (m.getLayer("cafe-labels")) m.setFilter("cafe-labels", f);
 }
