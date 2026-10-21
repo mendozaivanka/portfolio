@@ -1,0 +1,35 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Deploys the Astro build as a free static site that redeploys on every push to main.
+services:
+  - type: web
+    runtime: static
+    name: ivanka-portfolio
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+    routes:
+      # Astro builds /projects/index.html; send slash-less URLs to the canonical form
+      - type: redirect
+        source: /projects
+        destination: /projects/
+      - type: redirect
+        source: /tools
+        destination: /tools/
+    headers:
+      # Astro fingerprints everything in /_astro, so it can be cached forever
+      - path: /_astro/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY

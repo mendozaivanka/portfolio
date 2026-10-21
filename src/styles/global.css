@@ -456,7 +456,7 @@ a.card:active { transform: scale(.995); }
 }
 .shot-bar { display: flex; gap: 5px; padding: 8px 10px; border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent); }
 .shot-bar i { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--foreground) 18%, transparent); }
-.shot-body { padding: 12px 14px 14px; font: 12px/1.75 var(--f-mono); color: var(--foreground); overflow-x: auto; white-space: nowrap; }
+.shot-body { padding: 12px 14px 14px; font: 12px/1.75 var(--f-mono); color: var(--foreground); overflow-x: auto; white-space: pre; }
 .shot-body b { color: var(--primary-strong); font-weight: 500; }
 .shot-body .ok { color: var(--accent-ink); }
 .tint-rosas  { background: color-mix(in srgb, var(--s2) 45%, var(--card)); }

@@ -1,0 +1,16 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+---
+
+<Layout title={`Page not found — ${site.name}`} description="That page doesn't exist.">
+  <section class="page-hero reveal">
+    <span class="label">404 · off the map</span>
+    <h1>No star <em>here</em></h1>
+    <p>That page doesn't exist, or it moved. The morning star points back home.</p>
+    <div class="cta">
+      <a href="/" class="btn btn-default">Back home</a>
+      <a href="/projects/" class="btn btn-outline">See projects</a>
+    </div>
+  </section>
+</Layout>

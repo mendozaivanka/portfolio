@@ -1,0 +1,18 @@
+---
+import { site } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <nav aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/tools/">Tools</a>
+      <a href="/#about">About</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+    <small>© {year} {site.name} · steered by a pink morning star</small>
+  </div>
+</footer>

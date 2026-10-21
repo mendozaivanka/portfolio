@@ -1,14 +1,47 @@
 # Tala Rosa Portfolio
 
-Ivanka's portfolio, built on the **Tala** brand direction (eight-point star mark, *inabel* stripe, Newsreader + Figtree + DM Mono) and re-tinted in pastel pink. Components and token names follow [shadcn/ui](https://ui.shadcn.com/): Card, Button, Badge, Tabs, Separator, Command menu (⌘K) and Toast.
+Ivanka's portfolio: the **Tala** brand direction (eight-point star mark, *inabel* stripe, Newsreader + Figtree + DM Mono) re-tinted in pastel pink, with components modelled on [shadcn/ui](https://ui.shadcn.com/).
 
-Plain HTML, CSS and JS, with no build step.
+**Stack:** [Astro](https://astro.build) builds the pages, [React](https://react.dev) powers the interactive parts (theme menu, ⌘K command menu, project filters, prompt card, clock, toasts), and the result is a fully static site deployed on [Render](https://render.com).
 
-## Run it
+## Run it locally
 
 ```sh
-python3 -m http.server 8000
-# then visit http://localhost:8000
+npm install
+npm run dev        # http://localhost:4321
+npm run build      # type-check + build to dist/
+npm run preview    # serve dist/ locally
+```
+
+Needs Node 22.22 or newer (`.node-version` pins 24).
+
+## Make it yours
+
+Everything personal is data, not markup:
+
+| What | Where |
+|---|---|
+| Name, role, location, time zone, email, availability, nav | `src/data/site.ts` |
+| Social links | `socials` in `src/data/site.ts` |
+| Rotating prompts + sparkline numbers | `prompts` / `passRates` in `src/data/site.ts` |
+| Projects, filters, preview lines, links | `src/data/projects.ts` (`featured: true` shows on the home page) |
+| Tools / stack, setup card, home-page highlights | `src/data/tools.ts` |
+| Bio, hero copy, "how I work" cards | `src/pages/index.astro` |
+| Photo | `src/assets/me.jpeg` (Astro resizes and converts it to WebP) |
+| Colours (light + dark), components | `src/styles/global.css` |
+
+## Structure
+
+```
+src/
+  data/          site content (edit these)
+  pages/         index, projects, tools, 404 (Astro)
+  layouts/       Layout.astro: head, header, footer, theme script
+  components/    *.astro = static; *.tsx = React islands
+  lib/           theme + toast helpers shared by islands
+  styles/        global.css (tokens + components)
+public/          favicon
+render.yaml      Render Blueprint (static site, caching + security headers)
 ```
 
 ## Palette
@@ -22,15 +55,8 @@ python3 -m http.server 8000
 | Ube | support | `#ddcdf2` |
 | Pandan | status | `#cfe9db` |
 
-Dark mode uses a plum palette with the same token names. Everything lives at the top of `styles.css`.
+Dark mode uses a plum palette with the same token names.
 
-## Make it yours
+## Deploy
 
-| What | Where |
-|---|---|
-| Bio, socials, contact copy | `index.html` |
-| Projects + tab filters | `projects.html` (each card's `data-cat` matches a tab's `data-filter`) |
-| Tools / stack | `tools.html` |
-| Location, time zone, email, rotating prompts, sparkline data | `CONFIG` at the top of `script.js` |
-| Command menu entries | `COMMANDS` in `script.js` |
-| Photo | `assets/me.jpeg` |
+Render reads `render.yaml`: push to `main` and it rebuilds (`npm ci && npm run build`) and publishes `dist/`. To set it up the first time: Render dashboard → **New → Blueprint** → pick this repo.

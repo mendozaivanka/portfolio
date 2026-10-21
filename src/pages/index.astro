@@ -1,0 +1,225 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import Clock from "../components/Clock";
+import CopyEmailButton from "../components/CopyEmailButton";
+import ProjectCard from "../components/ProjectCard";
+import PromptGardenCard from "../components/PromptGardenCard";
+import { ChartIcon, FlowIcon, PenIcon } from "../components/icons";
+import me from "../assets/me.jpeg";
+import { passRates, prompts, site, socials } from "../data/site";
+import { projects } from "../data/projects";
+import { toolboxHighlights } from "../data/tools";
+
+const featured = projects.filter((p) => p.featured);
+
+const gists = [
+  {
+    Icon: PenIcon,
+    bg: "var(--s2)",
+    title: "Prompts are code",
+    body: "Versioned, tested against real examples, and rewritten until they work on the edge cases too.",
+  },
+  {
+    Icon: FlowIcon,
+    bg: "var(--ube)",
+    title: "No-code, then code",
+    body: "I build in n8n, Make and Zapier, and write Python or JS when no-code runs out.",
+  },
+  {
+    Icon: ChartIcon,
+    bg: "var(--pandan)",
+    title: "Evals or it didn't happen",
+    body: "Every prompt gets an eval set before it goes anywhere near production.",
+  },
+];
+
+const palette = [
+  { name: "Kabibe", role: "shell", color: "var(--background)" },
+  { name: "Rosas", role: "primary", color: "var(--primary)" },
+  { name: "Mangga", role: "accent", color: "var(--accent)" },
+  { name: "Ube", role: "support", color: "var(--ube)" },
+  { name: "Pandan", role: "status", color: "var(--pandan)" },
+];
+---
+
+<Layout title={`${site.name} — ${site.role}`}>
+  <!-- ───────── Hero ───────── -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="ident reveal">
+        <span class="label">AI · Automation · Prompt engineering</span>
+        <h1>Hi, I'm <em>{site.name}</em>.</h1>
+        <p class="tagline">Prompts, agents and workflows that steer the busywork home.</p>
+        <p class="story">
+          <em>Tala</em> is the morning star sailors steered by. I build the same kind of thing for teams: LLMs that
+          classify, extract and draft, automations that connect the tools they already use, and evals that keep it all
+          on course after it ships.
+        </p>
+        <ul class="principles">
+          <li><b>Prompts</b><span>Versioned, tested, rewritten until the edge cases pass.</span></li>
+          <li><b>Agents</b><span>Useful on their own, with a human approving what matters.</span></li>
+          <li><b>Evals</b><span>If I can't measure a prompt, I can't improve it.</span></li>
+        </ul>
+        <div class="cta">
+          <a href="/projects/" class="btn btn-default">See my work</a>
+          <a href="#contact" class="btn btn-outline">Get in touch</a>
+        </div>
+      </div>
+
+      <div class="specs reveal">
+        <div class="card profile">
+          <div class="avatar">
+            <Image src={me} alt={`Portrait of ${site.name}`} width={128} height={128} densities={[1, 2]} loading="eager" />
+          </div>
+          <div class="profile-meta">
+            <span class="profile-name">{site.name}</span>
+            <span class="profile-loc">
+              <span>{site.location}</span> · <Clock client:load timeZone={site.timeZone} />
+            </span>
+          </div>
+          {
+            site.available && (
+              <span class="badge badge-pandan">
+                <span class="status-dot" aria-hidden="true" />
+                Available for freelance
+              </span>
+            )
+          }
+        </div>
+
+        <PromptGardenCard client:visible prompts={prompts} passRates={passRates} />
+
+        <div class="card card-content">
+          <p class="label" style="margin-bottom:12px">Palette · Tala Rosa</p>
+          <div class="swatches">
+            {
+              palette.map((s) => (
+                <div class="sw">
+                  <i style={`background:${s.color}`} />
+                  <em>{s.name}</em>
+                  <span class="muted">{s.role}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Gists ───────── -->
+  <section class="section reveal" id="gists">
+    <div class="section-head">
+      <div>
+        <span class="label">Extra gists</span>
+        <h2>How I work</h2>
+      </div>
+    </div>
+    <ul class="gists">
+      {
+        gists.map(({ Icon, bg, title, body }) => (
+          <li class="card gist">
+            <span class="gist-icon" style={`background:${bg}`} aria-hidden="true">
+              <Icon size={18} />
+            </span>
+            <h3 class="card-title">{title}</h3>
+            <p>{body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ───────── Selected work ───────── -->
+  <section class="section reveal" id="projects">
+    <div class="section-head">
+      <div>
+        <span class="label">Selected work</span>
+        <h2>Things I've built</h2>
+      </div>
+      <a href="/projects/" class="btn btn-outline btn-sm">All projects →</a>
+    </div>
+    <ul class="pgrid">
+      {
+        featured.map((p) => (
+          <li>
+            <ProjectCard project={p} variant="link" />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ───────── Toolbox ───────── -->
+  <section class="section reveal" id="skills">
+    <div class="section-head">
+      <div>
+        <span class="label">Toolbox</span>
+        <h2>What I reach for</h2>
+      </div>
+      <a href="/tools/" class="btn btn-outline btn-sm">Full toolbox →</a>
+    </div>
+    <div class="badges">
+      {toolboxHighlights.map((t) => <span class={`badge badge-${t.swatch}`}>{t.label}</span>)}
+    </div>
+  </section>
+
+  <!-- ───────── About + socials ───────── -->
+  <section class="section reveal" id="about">
+    <div class="row2">
+      <div class="card">
+        <div class="card-header">
+          <span class="label">About me</span>
+          <h2 class="card-title">A bit lazy, in the useful way</h2>
+        </div>
+        <div class="card-content about">
+          <p class="muted">
+            Anything I've done three times, I want a machine to do. That turned into a career designing how people and
+            AI work together.
+          </p>
+          <p class="muted">
+            Away from the keyboard: matcha, film photography, long walks, and a growing pile of half-read books. (I also
+            touch grass, promise.)
+          </p>
+        </div>
+      </div>
+
+      <div class="card" id="social">
+        <div class="card-header" style="padding-bottom:14px">
+          <span class="label">Social dump</span>
+          <h2 class="card-title">Find me elsewhere</h2>
+        </div>
+        <hr class="separator" />
+        <ul class="social-list">
+          {
+            socials.map((s) => (
+              <li>
+                <a href={s.href} target="_blank" rel="noopener">
+                  <span class="name">{s.name}</span>
+                  <span class="muted">{s.note} ↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Contact ───────── -->
+  <section class="section reveal" id="contact">
+    <div class="card contact">
+      <div class="stripe" aria-hidden="true"></div>
+      <div>
+        <span class="label">Want to connect?</span>
+        <h2>Got busywork that needs automating?</h2>
+        <p>Or a prompt that isn't behaving. Email is the easiest way to reach me, and I usually reply within a day.</p>
+      </div>
+      <div class="email-field">
+        <a href={`mailto:${site.email}`} class="btn btn-default">Email me</a>
+        <CopyEmailButton client:idle email={site.email} />
+      </div>
+    </div>
+  </section>
+</Layout>

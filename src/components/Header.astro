@@ -1,0 +1,30 @@
+---
+import CommandMenu from "./CommandMenu";
+import ThemeMenu from "./ThemeMenu";
+import { StarMark } from "./icons";
+import { nav, site, socials } from "../data/site";
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => !href.includes("#") && path === href;
+const commandLinks = socials.map(({ name, href }) => ({ name, href }));
+---
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand" aria-label={`${site.name}, home`}>
+      <StarMark size={28} />
+      <span>{site.name}</span>
+    </a>
+    <nav class="nav" aria-label="Pages">
+      {nav.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <div class="header-actions">
+      <CommandMenu client:load email={site.email} links={commandLinks} />
+      <ThemeMenu client:load />
+    </div>
+  </div>
+</header>

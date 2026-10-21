@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+import { setup, toolGroups } from "../data/tools";
+
+// Maps a group's swatch to the CSS variable used for its coloured dot
+const dot: Record<string, string> = {
+  rosas: "var(--s3)",
+  ube: "var(--ube)",
+  pandan: "var(--pandan)",
+  mangga: "var(--accent)",
+  langit: "var(--langit)",
+};
+---
+
+<Layout
+  title={`Tools — ${site.name}`}
+  description={`The languages, models, automation platforms and software ${site.name} works with.`}
+>
+  <section class="page-hero reveal">
+    <span class="label">Tools · stack & setup</span>
+    <h1>My <em>toolbox</em></h1>
+    <p>
+      I mostly build with the Claude & OpenAI APIs, n8n and Python, and reach for TypeScript when something needs a UI.
+      Retrieval goes into Postgres + pgvector unless there's a good reason not to. Every prompt gets an eval set before
+      it goes anywhere near production.
+    </p>
+  </section>
+
+  <section class="reveal">
+    <div class="card setup">
+      {
+        setup.map((s) => (
+          <div>
+            <p class="label">{s.label}</p>
+            <p class="v">{s.value}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section reveal">
+    <div class="stack">
+      {
+        toolGroups.map((g) => (
+          <div class="card">
+            <div class="card-header">
+              <span class="swatch-dot" style={`background:${dot[g.swatch]}`} />
+              <h3 class="card-title">{g.title}</h3>
+              <p class="card-description">{g.description}</p>
+            </div>
+            <div class="card-content badges">
+              {g.items.map((item) => <span class={`badge badge-${g.swatch}`}>{item}</span>)}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

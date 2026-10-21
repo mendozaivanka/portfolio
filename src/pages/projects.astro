@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectGrid from "../components/ProjectGrid";
+import { site } from "../data/site";
+import { projects } from "../data/projects";
+
+const years = projects.map((p) => p.year);
+const range = `${Math.min(...years)}–${Math.max(...years)}`;
+---
+
+<Layout title={`Projects — ${site.name}`} description={`Agents, automations and prompt tooling built by ${site.name}.`}>
+  <section class="page-hero reveal">
+    <span class="label">Projects · {range}</span>
+    <h1>Things I've <em>built</em></h1>
+    <p>Tools that make prompts, agents and workflows behave, mostly so that nobody has to do the same task twice.</p>
+  </section>
+
+  <section class="reveal">
+    <ProjectGrid client:load projects={projects} />
+  </section>
+</Layout>

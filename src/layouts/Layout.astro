@@ -1,0 +1,68 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Toaster from "../components/Toaster";
+import { site } from "../data/site";
+
+type Props = {
+  title: string;
+  description?: string;
+};
+
+const { title, description = site.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#fbf6f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171014" media="(prefers-color-scheme: dark)" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Runs before paint so a saved theme never flashes. is:inline keeps it out of the bundle. -->
+    <script is:inline>
+      document.documentElement.classList.remove("no-js");
+      try {
+        const t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (_) {}
+    </script>
+  </head>
+  <body>
+    <div class="stripe" aria-hidden="true"></div>
+    <Header />
+    <main class="container">
+      <slot />
+    </main>
+    <Footer />
+    <Toaster client:idle />
+
+    <script>
+      // Fade sections in as they scroll into view
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          }),
+        { threshold: 0.1 },
+      );
+      document.querySelectorAll<HTMLElement>(".reveal").forEach((el, i) => {
+        el.style.transitionDelay = `${Math.min(i, 3) * 70}ms`;
+        io.observe(el);
+      });
+    </script>
+  </body>
+</html>
