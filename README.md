@@ -24,7 +24,7 @@ Everything personal is data, not markup:
 | Name, role, location, time zone, email, availability, nav | `src/data/site.ts` |
 | Social links | `socials` in `src/data/site.ts` |
 | Rotating prompts + sparkline numbers | `prompts` / `passRates` in `src/data/site.ts` |
-| Projects, filters, preview lines, links | `src/data/projects.ts` (`featured: true` shows on the home page; links with `href: "#"` are hidden) |
+| Projects, filters, preview lines, links | `src/data/projects.ts` (`kind: "work"` shows employer + period and groups under "At work"; `kind: "personal"` under "Side projects"; `featured: true` shows on the home page; links with `href: "#"` are hidden) |
 | Tools / stack, setup card, home-page highlights | `src/data/tools.ts` |
 | CV: roles, education, skills, headline numbers (rendered as timeline, JSON and system prompt on `/cv/`) | `src/data/cv.ts` (set `profile.pdf` to a file in `public/` to show a download button; `profile.phone` is off by default) |
 | Bio, hero copy, "how I work" cards | `src/pages/index.astro` |

@@ -27,7 +27,7 @@ export const cv = {
     summary:
       "AI and Automation Engineer with experience building automated anomaly detection systems, data pipelines and LLM-powered analytics tools. Hands-on with RAG pipelines, fine-tuning local LLMs and integrating models into production workflows, with a track record of cutting manual work and improving system performance. Comfortable in front of clients, supporting analytics and reporting systems.",
     /** Path under public/, or null to hide the download button. */
-    pdf: null as string | null,
+    pdf: "/Ivanka-Mendoza-CV.pdf" as string | null,
   },
 
   impact: [

@@ -174,12 +174,13 @@ const swatchClass: Record<string, string> = {
   <section class="reveal pt-10 sm:pt-14" id="projects">
     <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <span class="label-mono">Selected work</span>
+        <span class="label-mono">Selected work · built on the job</span>
         <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Things I've built</h2>
       </div>
       <Button asChild variant="outline" size="sm"><a href="/projects/">All projects <span aria-hidden="true">→</span></a></Button>
     </div>
-    <ul class="grid list-none gap-4 p-0 md:grid-cols-2">
+    <!-- With an odd number of cards, the last one spans the row instead of leaving a gap -->
+    <ul class="grid list-none gap-4 p-0 md:grid-cols-2 md:[&>li:last-child:nth-child(odd)]:col-span-2">
       {
         featured.map((p) => (
           <li class="flex">

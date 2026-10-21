@@ -2,24 +2,37 @@
 import Layout from "@/layouts/Layout.astro";
 import ProjectGrid from "@/components/ProjectGrid";
 import { site } from "@/data/site";
-import { projects } from "@/data/projects";
+import { kinds, projects } from "@/data/projects";
 
 const years = projects.map((p) => p.year);
 const range = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : "";
+// Only groups that have projects are rendered; the heading is skipped when there's just one group
+const groups = kinds.map((k) => ({ ...k, items: projects.filter((p) => p.kind === k.id) })).filter((g) => g.items.length);
 ---
 
-<Layout title={`Projects — ${site.name}`} description={`Agents, automations and prompt tooling built by ${site.name}.`}>
+<Layout title={`Projects — ${site.name}`} description={`AI, RAG and automation systems built by ${site.name} at work.`}>
   <section class="reveal grid max-w-[640px] gap-3 pt-8 pb-6 sm:pt-14 sm:pb-8">
     <span class="label-mono">Projects{range && ` · ${range}`}</span>
     <h1 class="font-serif text-[clamp(2.375rem,5.5vw,3.25rem)] leading-[1.05] font-medium tracking-tight">
       Things I've <em class="text-primary-strong italic">built</em>
     </h1>
     <p class="text-muted-foreground">
-      Tools that make prompts, agents and workflows behave, mostly so that nobody has to do the same task twice.
+      Detection systems, retrieval pipelines, fine-tuned models and the automation around them, mostly so that nobody
+      has to do the same task twice.
     </p>
   </section>
 
-  <section class="reveal">
-    <ProjectGrid client:load projects={projects} headingLevel="h2" />
-  </section>
+  {
+    groups.map((g, i) => (
+      <section class:list={["reveal", i > 0 && "pt-12 sm:pt-16"]} aria-labelledby={`kind-${g.id}`}>
+        <div class="mb-5 max-w-[64ch]">
+          <h2 id={`kind-${g.id}`} class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">
+            {g.label}
+          </h2>
+          <p class="mt-1 text-muted-foreground">{g.note}</p>
+        </div>
+        <ProjectGrid client:load projects={g.items} headingLevel="h3" />
+      </section>
+    ))
+  }
 </Layout>
