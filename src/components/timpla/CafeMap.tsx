@@ -64,6 +64,47 @@ function specialtyCard(p: MapPoint, withLink: boolean) {
     withLink ? linkHtml(`/timpla/cafes/${p.slug}/`, "Open the receipt →", false) : "",
   );
 }
+/** Several cafés in one building (e.g. Westgate Alabang): one card listing each, with its own receipt link. */
+function placeCard(members: MapPoint[], withLink: boolean) {
+  if (members.length === 1) return specialtyCard(members[0], withLink);
+  const where = [members[0].nb, members[0].city].filter((x, i, a) => x && a.indexOf(x) === i).join(", ");
+  const items = members.map((p) =>
+    `<div style="margin:6px 0">` +
+    `<div style="font:500 16px/1.2 Newsreader,serif">${esc(p.name)}</div>` +
+    `<div style="color:#6f6066">${esc([p.since && `since ${p.since}`, `specialty · ${p.tier}`].filter(Boolean).join(" · "))}</div>` +
+    (withLink ? linkHtml(`/timpla/cafes/${p.slug}/`, "Open the receipt →", false) : "") +
+    `</div>`).join("");
+  return card(`${members.length} cafés here`, where, items, "");
+}
+
+const TIER_ORDER = { acclaimed: 0, recognised: 1, indie: 2 } as const;
+/** Cafés within ~25 m of each other share a dot: geocoding often puts two shops in one building at the same point,
+ *  and a dot drawn exactly on top of another can't be seen, hovered or tapped. */
+function groupByPlace(points: MapPoint[]) {
+  const near = (a: MapPoint, b: MapPoint) =>
+    Math.hypot((a.lat - b.lat) * 111_320, (a.lon - b.lon) * 111_320 * Math.cos((a.lat * Math.PI) / 180)) < 25;
+  const groups: MapPoint[][] = [];
+  for (const p of points) {
+    const g = groups.find((g) => g.some((q) => near(p, q)));
+    if (g) g.push(p);
+    else groups.push([p]);
+  }
+  return groups.map((g) => {
+    g.sort((a, b) => TIER_ORDER[a.tier] - TIER_ORDER[b.tier]);
+    const names = [...new Set(g.map((p) => shortLabel(p.name)))];
+    return {
+      type: "Feature" as const,
+      geometry: { type: "Point" as const, coordinates: [g[0].lon, g[0].lat] },
+      properties: {
+        tier: g[0].tier,
+        tiers: g.map((p) => p.tier).join(","),
+        label: names.length <= 2 ? names.join(" · ") : `${names[0]} +${names.length - 1} more`,
+        members: JSON.stringify(g),
+      },
+    };
+  });
+}
+
 function otherCard(p: OtherPoint, withLink: boolean) {
   return card(
     p.name, "",
@@ -124,8 +165,10 @@ export default function CafeMap({ points, others, unverified }: {
         const halo = scheme === "dark" ? "#1a1310" : "#fffdf9";
         const labelLayout = {
           "text-font": ["Noto Sans Regular"],
-          "text-anchor": "left" as const,
-          "text-offset": [0.75, 0] as [number, number],
+          // Try right first, then the other sides, so two close dots can both keep a name
+          "text-variable-anchor": ["left", "right", "top", "bottom"] as ("left" | "right" | "top" | "bottom")[],
+          "text-radial-offset": 0.75,
+          "text-justify": "auto" as const,
           "text-max-width": 9,
           "text-optional": true,
         };
@@ -178,14 +221,7 @@ export default function CafeMap({ points, others, unverified }: {
         // 3. Specialty cafés on top, never clustered, with their names beside the dots
         m.addSource("cafes", {
           type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: points.map((p) => ({
-              type: "Feature",
-              geometry: { type: "Point", coordinates: [p.lon, p.lat] },
-              properties: { ...p, label: shortLabel(p.name) },
-            })),
-          },
+          data: { type: "FeatureCollection", features: groupByPlace(points) },
         });
         m.addLayer({
           id: "cafes", type: "circle", source: "cafes",
@@ -218,7 +254,7 @@ export default function CafeMap({ points, others, unverified }: {
         const hover = new Popup({ offset: 12, maxWidth: "280px", closeButton: false, closeOnClick: false });
         const coordsOf = (f: { geometry: unknown }) => (f.geometry as { coordinates: [number, number] }).coordinates;
         const cards: [string[], (props: any, link: boolean) => string][] = [
-          [["cafes", "cafe-labels"], specialtyCard],
+          [["cafes", "cafe-labels"], (p, link) => placeCard(JSON.parse(p.members), link)],
           [["others", "others-labels"], otherCard],
           [["unverified"], (p) => unverifiedCard(p.name)],
         ];
@@ -341,7 +377,8 @@ function othersData(others: OtherPoint[], kind: Kind): Extract<GeoJSONSourceSpec
 
 function applyFilters(m: MapLibreMap, s: { kind: Kind; tier: TierFilter; showUnverified: boolean }, others: OtherPoint[]) {
   const specialtyOn = s.kind === "all" || s.kind === "specialty";
-  const tierFilter: ExpressionSpecification | null = s.tier === "all" || s.kind !== "specialty" ? null : ["==", ["get", "tier"], s.tier];
+  // A shared dot shows when any café on it matches the tier
+  const tierFilter: ExpressionSpecification | null = s.tier === "all" || s.kind !== "specialty" ? null : ["in", s.tier, ["get", "tiers"]];
   for (const id of ["cafes", "cafe-labels"]) {
     m.setLayoutProperty(id, "visibility", specialtyOn ? "visible" : "none");
     m.setFilter(id, tierFilter);
