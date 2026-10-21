@@ -1,59 +1,49 @@
-import { useRef, useState, type KeyboardEvent } from "react";
-import { categories, type Category, type Project } from "../data/projects";
-import ProjectCard from "./ProjectCard";
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { categories, type Category, type Project } from "@/data/projects";
+import ProjectCard, { type HeadingLevel } from "./ProjectCard";
 
 type Filter = Category | "all";
 
-/** shadcn Tabs filtering the project cards. */
-export default function ProjectGrid({ projects }: { projects: Project[] }) {
-  const [filter, setFilter] = useState<Filter>("all");
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+const matches = (p: Project, f: Filter) => f === "all" || p.categories.includes(f);
 
-  const matches = (p: Project, f: Filter) => f === "all" || p.categories.includes(f);
+type Props = { projects: Project[]; headingLevel?: HeadingLevel };
+
+/** shadcn Tabs filtering the project cards. Radix handles roving focus and arrow keys.
+ *  Without JavaScript the tabs are hidden and every project is listed. */
+export default function ProjectGrid({ projects, headingLevel = "h2" }: Props) {
+  const [filter, setFilter] = useState<Filter>("all");
   const shown = projects.filter((p) => matches(p, filter));
 
-  // Arrow keys move between tabs (WAI-ARIA tabs pattern)
-  function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>, i: number) {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    e.preventDefault();
-    const n = categories.length;
-    const next = e.key === "ArrowRight" ? (i + 1) % n : (i - 1 + n) % n;
-    setFilter(categories[next].id);
-    tabRefs.current[next]?.focus();
-  }
-
   return (
-    <>
-      <div className="tabs-list" role="tablist" aria-label="Filter projects">
-        {categories.map((c, i) => (
-          <button
-            key={c.id}
-            ref={(el) => {
-              tabRefs.current[i] = el;
-            }}
-            className="tab"
-            role="tab"
-            id={`tab-${c.id}`}
-            aria-selected={filter === c.id}
-            aria-controls="project-panel"
-            tabIndex={filter === c.id ? 0 : -1}
-            onClick={() => setFilter(c.id)}
-            onKeyDown={(e) => onTabKeyDown(e, i)}
-          >
+    <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+      <TabsList
+        aria-label="Filter projects"
+        className="mb-5 h-auto max-w-full flex-wrap justify-start gap-0.5 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[mask-image:linear-gradient(90deg,#000_calc(100%-28px),transparent)] max-sm:[scrollbar-width:none] no-js:hidden"
+      >
+        {categories.map((c) => (
+          <TabsTrigger key={c.id} value={c.id} className="shrink-0 px-3 py-1.5">
             {c.label}
-            <span className="count">{projects.filter((p) => matches(p, c.id)).length}</span>
-          </button>
+            <span className="ml-1 font-mono text-[11px] text-muted-foreground">
+              {projects.filter((p) => matches(p, c.id)).length}
+            </span>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
-      <ul className="pgrid" role="tabpanel" id="project-panel" aria-labelledby={`tab-${filter}`}>
-        {shown.map((p) => (
-          <li key={p.title}>
-            <ProjectCard project={p} />
-          </li>
-        ))}
-      </ul>
-      {shown.length === 0 && <p className="muted">Nothing here yet.</p>}
-    </>
+      <TabsContent value={filter}>
+        {shown.length > 0 ? (
+          <ul className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">
+            {shown.map((p) => (
+              <li key={p.title} className="flex">
+                <ProjectCard project={p} headingLevel={headingLevel} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground">Nothing here yet.</p>
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }

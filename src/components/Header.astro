@@ -1,29 +1,45 @@
 ---
-import CommandMenu from "./CommandMenu";
-import ThemeMenu from "./ThemeMenu";
-import { StarMark } from "./icons";
-import { nav, site, socials } from "../data/site";
+import CommandMenu from "@/components/CommandMenu";
+import ThemeMenu from "@/components/ThemeMenu";
+import StarMark from "@/components/StarMark";
+import { nav, site, socials } from "@/data/site";
 
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => !href.includes("#") && path === href;
 const commandLinks = socials.map(({ name, href }) => ({ name, href }));
 ---
 
-<header class="site-header">
-  <div class="container">
-    <a href="/" class="brand" aria-label={`${site.name}, home`}>
+<header
+  class="sticky top-0 z-40 border-b border-border bg-background/85 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md"
+>
+  <div class="container-site flex h-14 items-center gap-2 sm:h-[60px] sm:gap-4">
+    <a
+      href="/"
+      class="flex items-center gap-2.5 rounded-md font-serif text-xl font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      aria-label={`${site.name}, home`}
+    >
       <StarMark size={28} />
-      <span>{site.name}</span>
+      <span class="max-[520px]:sr-only">{site.name}</span>
     </a>
-    <nav class="nav" aria-label="Pages">
-      {nav.map((item) => (
-        <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
-          {item.label}
-        </a>
-      ))}
+    <nav class="flex min-w-0 gap-0.5" aria-label="Pages">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            class:list={[
+              "rounded-md px-2 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-[current=page]:text-foreground sm:px-2.5 sm:text-sm",
+              // Contact also lives in the footer and the command menu; drop it on the narrowest phones
+              item.href.includes("#") && "max-[480px]:hidden",
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
-    <div class="header-actions">
-      <CommandMenu client:load email={site.email} links={commandLinks} />
+    <div class="ml-auto flex items-center gap-1.5">
+      <CommandMenu client:load email={site.email} pages={nav} links={commandLinks} />
       <ThemeMenu client:load />
     </div>
   </div>

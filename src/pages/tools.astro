@@ -1,15 +1,17 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { site } from "../data/site";
-import { setup, toolGroups } from "../data/tools";
+import Layout from "@/layouts/Layout.astro";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { site } from "@/data/site";
+import { setup, toolGroups } from "@/data/tools";
 
-// Maps a group's swatch to the CSS variable used for its coloured dot
-const dot: Record<string, string> = {
-  rosas: "var(--s3)",
-  ube: "var(--ube)",
-  pandan: "var(--pandan)",
-  mangga: "var(--accent)",
-  langit: "var(--langit)",
+// Swatch → badge colours and the little dot beside each group title
+const swatch: Record<string, { badge: string; dot: string }> = {
+  rosas: { badge: "bg-rosas-2 text-foreground", dot: "bg-rosas-3" },
+  ube: { badge: "bg-ube text-foreground", dot: "bg-ube" },
+  pandan: { badge: "bg-pandan text-foreground", dot: "bg-pandan" },
+  mangga: { badge: "bg-mangga text-foreground", dot: "bg-gold" },
+  langit: { badge: "bg-langit text-foreground", dot: "bg-langit" },
 };
 ---
 
@@ -17,10 +19,12 @@ const dot: Record<string, string> = {
   title={`Tools — ${site.name}`}
   description={`The languages, models, automation platforms and software ${site.name} works with.`}
 >
-  <section class="page-hero reveal">
-    <span class="label">Tools · stack & setup</span>
-    <h1>My <em>toolbox</em></h1>
-    <p>
+  <section class="reveal grid max-w-[640px] gap-3 pt-8 pb-6 sm:pt-14 sm:pb-8">
+    <span class="label-mono">Tools · stack & setup</span>
+    <h1 class="font-serif text-[clamp(2.375rem,5.5vw,3.25rem)] leading-[1.05] font-medium tracking-tight">
+      My <em class="text-primary-strong italic">toolbox</em>
+    </h1>
+    <p class="text-muted-foreground">
       I mostly build with the Claude & OpenAI APIs, n8n and Python, and reach for TypeScript when something needs a UI.
       Retrieval goes into Postgres + pgvector unless there's a good reason not to. Every prompt gets an eval set before
       it goes anywhere near production.
@@ -28,32 +32,34 @@ const dot: Record<string, string> = {
   </section>
 
   <section class="reveal">
-    <div class="card setup">
+    <Card className="grid gap-4 px-5 sm:grid-cols-3">
       {
         setup.map((s) => (
           <div>
-            <p class="label">{s.label}</p>
-            <p class="v">{s.value}</p>
+            <p class="label-mono">{s.label}</p>
+            <p class="font-serif text-lg">{s.value}</p>
           </div>
         ))
       }
-    </div>
+    </Card>
   </section>
 
-  <section class="section reveal">
-    <div class="stack">
+  <section class="reveal pt-10 sm:pt-14">
+    <div class="grid gap-4 md:grid-cols-2">
       {
         toolGroups.map((g) => (
-          <div class="card">
-            <div class="card-header">
-              <span class="swatch-dot" style={`background:${dot[g.swatch]}`} />
-              <h3 class="card-title">{g.title}</h3>
-              <p class="card-description">{g.description}</p>
-            </div>
-            <div class="card-content badges">
-              {g.items.map((item) => <span class={`badge badge-${g.swatch}`}>{item}</span>)}
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <h2 class="flex items-center gap-2.5 font-heading text-xl leading-snug font-medium">
+                <span class:list={["size-2.5 rounded-[3px]", swatch[g.swatch].dot]} aria-hidden="true" />
+                {g.title}
+              </h2>
+              <CardDescription>{g.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-1.5">
+              {g.items.map((item) => <Badge className={`h-auto px-2.5 py-0.5 ${swatch[g.swatch].badge}`}>{item}</Badge>)}
+            </CardContent>
+          </Card>
         ))
       }
     </div>

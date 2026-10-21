@@ -1,11 +1,12 @@
-import { copyText } from "../lib/toast";
-import { CopyIcon } from "./icons";
+import { CopyIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { copyText } from "@/lib/toast";
 
 export default function CopyEmailButton({ email }: { email: string }) {
   return (
-    <button className="btn btn-outline" type="button" onClick={() => copyText(email)}>
-      <CopyIcon size={15} />
+    <Button variant="outline" size="lg" onClick={() => copyText(email)} className="no-js:hidden">
+      <CopyIcon />
       Copy address
-    </button>
+    </Button>
   );
 }

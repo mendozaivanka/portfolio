@@ -1,130 +1,167 @@
 ---
 import { Image } from "astro:assets";
-import Layout from "../layouts/Layout.astro";
-import Clock from "../components/Clock";
-import CopyEmailButton from "../components/CopyEmailButton";
-import ProjectCard from "../components/ProjectCard";
-import PromptGardenCard from "../components/PromptGardenCard";
-import { ChartIcon, FlowIcon, PenIcon } from "../components/icons";
-import me from "../assets/me.jpeg";
-import { passRates, prompts, site, socials } from "../data/site";
-import { projects } from "../data/projects";
-import { toolboxHighlights } from "../data/tools";
+import { BarChart3Icon, PenLineIcon, WorkflowIcon } from "lucide-react";
+import Layout from "@/layouts/Layout.astro";
+import Clock from "@/components/Clock";
+import CopyEmailButton from "@/components/CopyEmailButton";
+import ProjectCard from "@/components/ProjectCard";
+import PromptGardenCard from "@/components/PromptGardenCard";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import me from "@/assets/me.jpeg";
+import { passRates, prompts, site, socials } from "@/data/site";
+import { projects } from "@/data/projects";
+import { toolboxHighlights } from "@/data/tools";
 
 const featured = projects.filter((p) => p.featured);
 
 const gists = [
   {
-    Icon: PenIcon,
-    bg: "var(--s2)",
+    Icon: PenLineIcon,
+    tint: "bg-rosas-2",
     title: "Prompts are code",
     body: "Versioned, tested against real examples, and rewritten until they work on the edge cases too.",
   },
   {
-    Icon: FlowIcon,
-    bg: "var(--ube)",
+    Icon: WorkflowIcon,
+    tint: "bg-ube",
     title: "No-code, then code",
     body: "I build in n8n, Make and Zapier, and write Python or JS when no-code runs out.",
   },
   {
-    Icon: ChartIcon,
-    bg: "var(--pandan)",
+    Icon: BarChart3Icon,
+    tint: "bg-pandan",
     title: "Evals or it didn't happen",
     body: "Every prompt gets an eval set before it goes anywhere near production.",
   },
 ];
 
 const palette = [
-  { name: "Kabibe", role: "shell", color: "var(--background)" },
-  { name: "Rosas", role: "primary", color: "var(--primary)" },
-  { name: "Mangga", role: "accent", color: "var(--accent)" },
-  { name: "Ube", role: "support", color: "var(--ube)" },
-  { name: "Pandan", role: "status", color: "var(--pandan)" },
+  { name: "Kabibe", role: "shell", cls: "bg-background" },
+  { name: "Rosas", role: "primary", cls: "bg-primary" },
+  { name: "Mangga", role: "accent", cls: "bg-gold" },
+  { name: "Ube", role: "support", cls: "bg-ube" },
+  { name: "Pandan", role: "status", cls: "bg-pandan" },
 ];
+
+const swatchClass: Record<string, string> = {
+  rosas: "bg-rosas-2 text-foreground",
+  ube: "bg-ube text-foreground",
+  pandan: "bg-pandan text-foreground",
+  mangga: "bg-mangga text-foreground",
+  langit: "bg-langit text-foreground",
+};
 ---
 
 <Layout title={`${site.name} — ${site.role}`}>
   <!-- ───────── Hero ───────── -->
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="ident reveal">
-        <span class="label">AI · Automation · Prompt engineering</span>
-        <h1>Hi, I'm <em>{site.name}</em>.</h1>
-        <p class="tagline">Prompts, agents and workflows that steer the busywork home.</p>
-        <p class="story">
-          <em>Tala</em> is the morning star sailors steered by. I build the same kind of thing for teams: LLMs that
-          classify, extract and draft, automations that connect the tools they already use, and evals that keep it all
-          on course after it ships.
+  <section class="pt-8 pb-2 sm:pt-14">
+    <div class="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10">
+      <div class="reveal flex flex-col gap-5">
+        <span class="label-mono">AI · Automation · Prompt engineering</span>
+        <h1 class="font-serif text-[clamp(2.25rem,7vw,3.5rem)] leading-[1.02] font-medium tracking-tight text-balance">
+          Hi, I'm <em class="text-primary-strong italic">{site.name}</em>.
+        </h1>
+        <p class="font-serif text-xl leading-snug text-balance sm:text-[22px]">
+          Prompts, agents and workflows that steer the busywork home.
         </p>
-        <ul class="principles">
-          <li><b>Prompts</b><span>Versioned, tested, rewritten until the edge cases pass.</span></li>
-          <li><b>Agents</b><span>Useful on their own, with a human approving what matters.</span></li>
-          <li><b>Evals</b><span>If I can't measure a prompt, I can't improve it.</span></li>
+        <p class="max-w-[46ch] text-muted-foreground">
+          <em class="text-foreground">Tala</em> is the morning star sailors steered by. I build the same kind of thing for
+          teams: LLMs that classify, extract and draft, automations that connect the tools they already use, and evals that
+          keep it all on course after it ships.
+        </p>
+        <ul class="grid list-none gap-2 p-0">
+          {
+            [
+              ["Prompts", "Versioned, tested, rewritten until the edge cases pass."],
+              ["Agents", "Useful on their own, with a human approving what matters."],
+              ["Evals", "If I can't measure a prompt, I can't improve it."],
+            ].map(([k, v]) => (
+              <li class="grid grid-cols-[84px_minmax(0,1fr)] gap-2.5 border-t border-border pt-2 text-sm">
+                <b class="label-mono pt-0.5">{k}</b>
+                <span>{v}</span>
+              </li>
+            ))
+          }
         </ul>
-        <div class="cta">
-          <a href="/projects/" class="btn btn-default">See my work</a>
-          <a href="#contact" class="btn btn-outline">Get in touch</a>
+        <div class="flex flex-wrap gap-2">
+          <Button asChild size="lg"><a href="/projects/">See my work</a></Button>
+          <Button asChild size="lg" variant="outline"><a href="#contact">Get in touch</a></Button>
         </div>
       </div>
 
-      <div class="specs reveal">
-        <div class="card profile">
-          <div class="avatar">
-            <Image src={me} alt={`Portrait of ${site.name}`} width={128} height={128} densities={[1, 2]} loading="eager" />
+      <div class="reveal grid gap-4">
+        <Card className="flex-row flex-wrap items-center gap-4 px-4">
+          <div class="size-16 shrink-0 overflow-hidden rounded-full bg-rosas-2 ring-3 ring-primary ring-offset-3 ring-offset-card">
+            <Image
+              src={me}
+              alt={`Portrait of ${site.name}`}
+              width={128}
+              height={128}
+              densities={[1, 2]}
+              loading="eager"
+              class="size-full object-cover"
+            />
           </div>
-          <div class="profile-meta">
-            <span class="profile-name">{site.name}</span>
-            <span class="profile-loc">
+          <div class="grid min-w-0 gap-0.5">
+            <span class="font-serif text-xl leading-tight font-semibold">{site.name}</span>
+            <span class="flex flex-wrap items-center gap-1.5 text-[13px] text-muted-foreground">
               <span>{site.location}</span> · <Clock client:load timeZone={site.timeZone} />
             </span>
           </div>
           {
             site.available && (
-              <span class="badge badge-pandan">
+              <Badge className="bg-pandan text-foreground sm:ml-auto">
                 <span class="status-dot" aria-hidden="true" />
                 Available for freelance
-              </span>
+              </Badge>
             )
           }
-        </div>
+        </Card>
 
         <PromptGardenCard client:visible prompts={prompts} passRates={passRates} />
 
-        <div class="card card-content">
-          <p class="label" style="margin-bottom:12px">Palette · Tala Rosa</p>
-          <div class="swatches">
+        <Card>
+          <CardHeader>
+            <CardTitle className="label-mono font-sans font-medium">Palette · Tala Rosa</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-5 gap-2">
             {
               palette.map((s) => (
-                <div class="sw">
-                  <i style={`background:${s.color}`} />
-                  <em>{s.name}</em>
-                  <span class="muted">{s.role}</span>
+                <div class="grid min-w-0 gap-1 text-xs">
+                  <i class:list={["block h-9 rounded-md border border-border", s.cls]} />
+                  <em class="font-medium not-italic">{s.name}</em>
+                  <span class="text-muted-foreground max-[420px]:hidden">{s.role}</span>
                 </div>
               ))
             }
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   </section>
 
   <!-- ───────── Gists ───────── -->
-  <section class="section reveal" id="gists">
-    <div class="section-head">
-      <div>
-        <span class="label">Extra gists</span>
-        <h2>How I work</h2>
-      </div>
+  <section class="reveal pt-10 sm:pt-14" id="gists">
+    <div class="mb-5">
+      <span class="label-mono">Extra gists</span>
+      <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">How I work</h2>
     </div>
-    <ul class="gists">
+    <ul class="grid list-none gap-4 p-0 md:grid-cols-3">
       {
-        gists.map(({ Icon, bg, title, body }) => (
-          <li class="card gist">
-            <span class="gist-icon" style={`background:${bg}`} aria-hidden="true">
-              <Icon size={18} />
-            </span>
-            <h3 class="card-title">{title}</h3>
-            <p>{body}</p>
+        gists.map(({ Icon, tint, title, body }) => (
+          <li class="flex">
+            <Card className="w-full">
+              <CardHeader>
+                <span class:list={["grid size-9 place-items-center rounded-md", tint]} aria-hidden="true">
+                  <Icon size={18} />
+                </span>
+                <h3 class="pt-2 font-heading text-xl leading-snug font-medium">{title}</h3>
+                <CardDescription>{body}</CardDescription>
+              </CardHeader>
+            </Card>
           </li>
         ))
       }
@@ -132,19 +169,21 @@ const palette = [
   </section>
 
   <!-- ───────── Selected work ───────── -->
-  <section class="section reveal" id="projects">
-    <div class="section-head">
+  <section class="reveal pt-10 sm:pt-14" id="projects">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <span class="label">Selected work</span>
-        <h2>Things I've built</h2>
+        <span class="label-mono">Selected work</span>
+        <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Things I've built</h2>
       </div>
-      <a href="/projects/" class="btn btn-outline btn-sm">All projects →</a>
+      <Button asChild variant="outline" size="sm"><a href="/projects/">All projects <span aria-hidden="true">→</span></a></Button>
     </div>
-    <ul class="pgrid">
+    <ul class="grid list-none gap-4 p-0 md:grid-cols-2">
       {
         featured.map((p) => (
-          <li>
-            <ProjectCard project={p} variant="link" />
+          <li class="flex">
+            <div class="w-full">
+              <ProjectCard project={p} variant="link" />
+            </div>
           </li>
         ))
       }
@@ -152,74 +191,87 @@ const palette = [
   </section>
 
   <!-- ───────── Toolbox ───────── -->
-  <section class="section reveal" id="skills">
-    <div class="section-head">
+  <section class="reveal pt-10 sm:pt-14" id="skills">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <span class="label">Toolbox</span>
-        <h2>What I reach for</h2>
+        <span class="label-mono">Toolbox</span>
+        <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">What I reach for</h2>
       </div>
-      <a href="/tools/" class="btn btn-outline btn-sm">Full toolbox →</a>
+      <Button asChild variant="outline" size="sm"><a href="/tools/">Full toolbox <span aria-hidden="true">→</span></a></Button>
     </div>
-    <div class="badges">
-      {toolboxHighlights.map((t) => <span class={`badge badge-${t.swatch}`}>{t.label}</span>)}
+    <div class="flex flex-wrap gap-2">
+      {
+        toolboxHighlights.map((t) => (
+          <Badge className={`h-auto px-3 py-1 text-[13px] ${swatchClass[t.swatch]}`}>{t.label}</Badge>
+        ))
+      }
     </div>
   </section>
 
   <!-- ───────── About + socials ───────── -->
-  <section class="section reveal" id="about">
-    <div class="row2">
-      <div class="card">
-        <div class="card-header">
-          <span class="label">About me</span>
-          <h2 class="card-title">A bit lazy, in the useful way</h2>
-        </div>
-        <div class="card-content about">
-          <p class="muted">
-            Anything I've done three times, I want a machine to do. That turned into a career designing how people and
-            AI work together.
+  <section class="reveal pt-10 sm:pt-14" id="about">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <span class="label-mono">About me</span>
+          <CardTitle className="text-xl">A bit lazy, in the useful way</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 text-muted-foreground">
+          <p>
+            Anything I've done three times, I want a machine to do. That turned into a career designing how people and AI
+            work together.
           </p>
-          <p class="muted">
+          <p>
             Away from the keyboard: matcha, film photography, long walks, and a growing pile of half-read books. (I also
             touch grass, promise.)
           </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div class="card" id="social">
-        <div class="card-header" style="padding-bottom:14px">
-          <span class="label">Social dump</span>
-          <h2 class="card-title">Find me elsewhere</h2>
-        </div>
-        <hr class="separator" />
-        <ul class="social-list">
+      <Card className="gap-0" id="social">
+        <CardHeader className="pb-4">
+          <span class="label-mono">Social dump</span>
+          <CardTitle className="text-xl">Find me elsewhere</CardTitle>
+        </CardHeader>
+        <Separator />
+        <ul class="list-none p-0">
           {
             socials.map((s) => (
-              <li>
-                <a href={s.href} target="_blank" rel="noopener">
-                  <span class="name">{s.name}</span>
-                  <span class="muted">{s.note} ↗</span>
+              <li class="border-t border-border first:border-t-0">
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener"
+                  class="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted"
+                >
+                  <span class="font-medium">{s.name}</span>
+                  <span class="text-right text-[13px] text-muted-foreground">{s.note} <span aria-hidden="true">↗</span></span>
                 </a>
               </li>
             ))
           }
         </ul>
-      </div>
+      </Card>
     </div>
   </section>
 
   <!-- ───────── Contact ───────── -->
-  <section class="section reveal" id="contact">
-    <div class="card contact">
-      <div class="stripe" aria-hidden="true"></div>
+  <section class="reveal pt-10 sm:pt-14" id="contact">
+    <Card className="relative gap-6 overflow-hidden px-5 pt-9 pb-6 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-8 sm:pt-10 sm:pb-8">
+      <div class="stripe absolute inset-x-0 top-0 h-1.5!" aria-hidden="true"></div>
       <div>
-        <span class="label">Want to connect?</span>
-        <h2>Got busywork that needs automating?</h2>
-        <p>Or a prompt that isn't behaving. Email is the easiest way to reach me, and I usually reply within a day.</p>
+        <span class="label-mono">Want to connect?</span>
+        <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2.125rem)] font-medium tracking-tight text-balance">
+          Got busywork that needs automating?
+        </h2>
+        <p class="mt-1.5 text-muted-foreground">
+          Or a prompt that isn't behaving. Email is the easiest way to reach me, and I usually reply within a day.
+        </p>
       </div>
-      <div class="email-field">
-        <a href={`mailto:${site.email}`} class="btn btn-default">Email me</a>
+      <div class="flex flex-wrap gap-2 *:max-sm:flex-1">
+        <Button asChild size="lg"><a href={`mailto:${site.email}`}>Email me</a></Button>
         <CopyEmailButton client:idle email={site.email} />
       </div>
-    </div>
+    </Card>
   </section>
 </Layout>

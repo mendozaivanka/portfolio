@@ -11,3 +11,6 @@ node_modules/
 
 # macOS
 .DS_Store
+
+# generated from src/data/tokens.ts on every build
+src/styles/tokens.css

@@ -37,5 +37,6 @@ export const passRates = [71, 74, 82, 80, 85, 88, 90, 93, 95];
 export const nav = [
   { label: "Projects", href: "/projects/" },
   { label: "Tools", href: "/tools/" },
+  { label: "Tala", href: "/tala/" },
   { label: "Contact", href: "/#contact" },
 ];

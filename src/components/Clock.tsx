@@ -18,5 +18,9 @@ export default function Clock({ timeZone }: { timeZone?: string }) {
     return () => window.clearInterval(id);
   }, [timeZone]);
 
-  return <time id="clock">{time}</time>;
+  return (
+    <time className="font-mono text-xs tabular-nums" dateTime={time === "--:--" ? undefined : time}>
+      {time}
+    </time>
+  );
 }
