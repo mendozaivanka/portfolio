@@ -19,7 +19,7 @@ const links = [
   palette="kape"
   title={`${title} · Timpla`}
   description={description ??
-    `Timpla maps ${meta.shops} specialty cafés in Metro Manila: who roasts for whom, where the beans grow, and when each place opened.`}
+    `Timpla maps ${meta.directory.shops} independent cafés in Metro Manila, ${meta.shops} of them specialty: who roasts for whom, where the beans grow, and when each place opened.`}
 >
   <!-- Timpla's own header replaces the portfolio header on every Timpla page -->
   <header class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border pt-5 pb-4 print:hidden">
@@ -55,6 +55,7 @@ const links = [
   <slot />
   <p class="mt-16 border-t border-border pt-5 text-[13px] text-muted-foreground">
     Data as of {meta.builtAt}. Map data © <a class="underline underline-offset-4" href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> (ODbL) ·
+    places corroborated with Overture Maps ·
     harvest data: Philippine Statistics Authority · editorial sources cited per café ·
     no Google or Foursquare ratings, by design.
   </p>

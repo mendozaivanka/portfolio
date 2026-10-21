@@ -251,6 +251,9 @@
   .tier-dot[data-tier="acclaimed"] { background: var(--tier-acclaimed); }
   .tier-dot[data-tier="recognised"] { background: var(--tier-recognised); }
   .tier-dot[data-tier="indie"] { border: 2px solid var(--tier-indie); background: transparent; }
+  /* The wider directory (no specialty check): muted, so specialty tiers stay the loudest marks */
+  .tier-dot[data-tier="independent"] { border: 1.5px solid var(--muted-foreground); background: transparent; }
+  .tier-dot[data-tier="multibranch"] { border: 1.5px solid var(--muted-foreground); background: radial-gradient(var(--muted-foreground) 35%, transparent 40%); }
 }
 
 /* ───────── Timpla palette: "Kape't Gatas" (coffee with milk) ─────────

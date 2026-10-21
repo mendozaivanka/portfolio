@@ -7,6 +7,8 @@
 //   ncr.json         simplified NCR outline as an SVG path in a 300×380 box, plus the projection
 //   timeline.json    openings per year (included shops vs whole ecosystem) + events
 //   provenance.json  share of Manila listings vs share of the Arabica harvest, by province
+//   directory.json   independent + multi-branch cafés from cafe-data/directory.csv (specialty rows live in shops.json)
+//   osm_layer.json   OSM cafés with no recent evidence: [lon, lat, name], drawn faintly as "status unverified"
 //   meta.json        counts and build date
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
@@ -171,6 +173,18 @@ const provinces = ["Benguet", "Bukidnon", "Davao del Sur", "Mountain Province", 
   allCoffeeShare: Number(((val(allCoffee, p) / allTotal) * 100).toFixed(1)),
 }));
 
+// ───────── Directory: everything independent with recent evidence (scripts/build_directory.py) ─────────
+const dir = parseCsv(read("directory.csv"));
+const round5 = (x: string) => Number(Number(x).toFixed(5));
+const others = dir.filter((r) => r.cls !== "specialty").map((r) => ({
+  id: r.osm_id, name: r.name, cls: r.cls as "independent" | "multibranch", city: r.city,
+  lon: round5(r.lon), lat: round5(r.lat), n: Number(r.locations) || 1,
+  ev: r.open_evidence, evd: r.evidence_date, ig: r.instagram.replace(/^@/, ""), web: r.website,
+}));
+const layer = (JSON.parse(read("osm_layer.json")) as { name: string; lon: number; lat: number }[])
+  .map((c) => [Number(c.lon.toFixed(5)), Number(c.lat.toFixed(5)), c.name]);
+const count = <T,>(xs: T[], f: (x: T) => string) => xs.reduce((a, x) => ({ ...a, [f(x)]: (a[f(x)] ?? 0) + 1 }), {} as Record<string, number>);
+
 // ───────── Write ─────────
 const meta = {
   builtAt: new Date().toISOString().slice(0, 10),
@@ -181,6 +195,13 @@ const meta = {
   roasterLinks: parsePsv(read("data/roaster_edges.psv")).length,
   beanListings: parsePsv(read("data/origins.psv")).length,
   listingTotal, arabicaTotal, allTotal,
+  directory: {
+    shops: shopList.length + others.length,
+    branches: rows.length + others.length,
+    classes: { specialty: rows.length, ...count(others, (o) => o.cls) },
+    evidence: { editorial_2025_26: rows.length, ...count(others, (o) => o.ev) },
+    unverified: layer.length,
+  },
 };
 const write = (name: string, data: unknown) => writeFileSync(path.join(OUT, name), JSON.stringify(data) + "\n");
 write("shops.json", shopList);
@@ -188,6 +209,9 @@ write("points.json", points);
 write("ncr.json", { path: ncrPath, box: BOX });
 write("timeline.json", { years, events: tl.length });
 write("provenance.json", provinces);
+write("directory.json", others);
+write("osm_layer.json", layer);
 write("meta.json", meta);
-console.log(`timpla: ${meta.shops} shops, ${meta.branches} branches, ${meta.mapped} mapped → src/data/timpla/`);
+console.log(`timpla: ${meta.shops} specialty shops, ${meta.branches} branches, ${meta.mapped} mapped → src/data/timpla/`);
+console.log(`  directory: ${meta.directory.shops} shops, ${meta.directory.branches} branches`, meta.directory.classes, `· ${layer.length} unverified`);
 console.log("  provenance:", provinces.map((p) => `${p.province} menu ${p.menuShare}% vs arabica ${p.harvestShare}%`).join("; "));

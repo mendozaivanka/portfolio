@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { LngLatBounds, MapLibreMap, NavigationControl, Popup, setWorkerUrl, type ExpressionSpecification } from "maplibre-gl";
+import {
+  GeoJSONSource, LngLatBounds, MapLibreMap, NavigationControl, Popup, setWorkerUrl, type ExpressionSpecification,
+  type GeoJSONSourceSpecification,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 // MapLibre renders tiles in a web worker that Vite's dependency pre-bundling separates from the main file;
 // point at it explicitly (`?url` serves it in dev and copies it, hashed, into the build).
@@ -16,49 +19,79 @@ const TINT = {
   dark: { background: "#1a1310", water: "#1c252b", park: "#1f231b", building: "#261d17" },
 };
 const TIER = {
-  light: { acclaimed: "#3b2016", recognised: "#8b4a26", indie: "#8b4a26", ring: "#ffffff" },
-  dark: { acclaimed: "#f0c9a4", recognised: "#b9774c", indie: "#f0c9a4", ring: "#1a1310" },
+  light: { acclaimed: "#3b2016", recognised: "#8b4a26", indie: "#8b4a26", ring: "#ffffff", muted: "#6e5b4e", cluster: "#e8c9a9", faint: "#a8958a" },
+  dark: { acclaimed: "#f0c9a4", recognised: "#b9774c", indie: "#f0c9a4", ring: "#1a1310", muted: "#bba795", cluster: "#4a3426", faint: "#6f6158" },
 };
 
 export type MapPoint = {
   slug: string; name: string; branch: string; tier: "acclaimed" | "recognised" | "indie";
   city: string; nb: string; lon: number; lat: number; beans?: string; since?: string;
 };
+/** A café from the wider directory: no receipt page, so the card carries the evidence and an outbound link. */
+export type OtherPoint = {
+  name: string; cls: "independent" | "multibranch"; city: string; lon: number; lat: number;
+  n: number; evidence: string; href: string; linkLabel: string;
+};
 
+type Kind = "all" | "specialty" | OtherPoint["cls"];
 type TierFilter = "all" | MapPoint["tier"];
+const KINDS: { id: Kind; label: string }[] = [
+  { id: "all", label: "All cafés" },
+  { id: "specialty", label: "Specialty" },
+  { id: "independent", label: "Independent" },
+  { id: "multibranch", label: "Multi-branch" },
+];
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+const shortLabel = (name: string) => name.replace(/\s*\(.*?\)\s*/g, " ").trim();
 
-/** The details card shown on hover (no link) and on click/tap (with the link). */
-function cardHtml(p: MapPoint, withLink: boolean) {
-  const row = (k: string, v: string) =>
-    v ? `<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:#6f6066">${k}</span><span style="text-align:right">${esc(v)}</span></div>` : "";
-  const rule = `<div style="border-top:1.5px dashed #d9cfd2;margin:6px 0"></div>`;
-  return (
-    `<div style="font:13px/1.5 'DM Mono',monospace;color:#2b2226;min-width:200px">` +
-    `<div style="font:500 18px/1.2 Newsreader,serif;margin-bottom:2px">${esc(p.name)}</div>` +
-    (p.branch ? `<div style="font:13px Figtree,sans-serif;color:#6f6066">${esc(p.branch)}</div>` : "") +
-    rule +
+const row = (k: string, v: string) =>
+  v ? `<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:#6f6066">${k}</span><span style="text-align:right">${esc(v)}</span></div>` : "";
+const RULE = `<div style="border-top:1.5px dashed #d9cfd2;margin:6px 0"></div>`;
+const card = (title: string, sub: string, rows: string, link: string) =>
+  `<div style="font:13px/1.5 'DM Mono',monospace;color:#2b2226;min-width:200px">` +
+  `<div style="font:500 18px/1.2 Newsreader,serif;margin-bottom:2px">${esc(title)}</div>` +
+  (sub ? `<div style="font:13px Figtree,sans-serif;color:#6f6066">${esc(sub)}</div>` : "") +
+  RULE + rows + (link ? RULE + link : "") + `</div>`;
+const linkHtml = (href: string, text: string, external: boolean) =>
+  `<a href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ""} style="font:600 14px Figtree,sans-serif;color:#8b4a26">${esc(text)}</a>`;
+
+/** Details card: on hover (no link) and on click/tap (with the link). */
+function specialtyCard(p: MapPoint, withLink: boolean) {
+  return card(
+    p.name, p.branch,
     row("WHERE", [p.nb, p.city].filter((x, i, a) => x && a.indexOf(x) === i).join(", ")) +
-    row("SINCE", p.since || "") +
-    row("BEANS", p.beans || "") +
-    row("TIER", p.tier) +
-    (withLink ? rule + `<a href="/timpla/cafes/${esc(p.slug)}/" style="font:600 14px Figtree,sans-serif;color:#8b4a26">Open the receipt →</a>` : "") +
-    `</div>`
+      row("SINCE", p.since || "") + row("BEANS", p.beans || "") + row("TIER", `specialty · ${p.tier}`),
+    withLink ? linkHtml(`/timpla/cafes/${p.slug}/`, "Open the receipt →", false) : "",
   );
 }
+function otherCard(p: OtherPoint, withLink: boolean) {
+  return card(
+    p.name, "",
+    row("WHERE", p.city) +
+      row("KIND", p.cls === "multibranch" ? `multi-branch · ${p.n} locations` : "independent") +
+      row("OPEN", p.evidence),
+    withLink ? linkHtml(p.href, `${p.linkLabel} ↗`, true) : "",
+  );
+}
+function unverifiedCard(name: string) {
+  return card(name, "", row("STATUS", "unverified") + row("SOURCE", "OpenStreetMap only"), "");
+}
 
-export default function CafeMap({ points }: { points: MapPoint[] }) {
+export default function CafeMap({ points, others, unverified }: {
+  points: MapPoint[]; others: OtherPoint[]; unverified: [number, number, string][];
+}) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const [kind, setKind] = useState<Kind>("all");
   const [tier, setTier] = useState<TierFilter>("all");
-  const tierRef = useRef<TierFilter>("all");
-  tierRef.current = tier;
+  const [showUnverified, setShowUnverified] = useState(false);
+  const state = useRef({ kind, tier, showUnverified });
+  state.current = { kind, tier, showUnverified };
 
   // Build (and rebuild on theme change) the map
   useEffect(() => {
     if (!box.current) return;
     let map: MapLibreMap | null = null;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const build = () => {
       const scheme = effectiveTheme();
@@ -87,6 +120,62 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
         ] as const) if (m.getLayer(layer)) m.setPaintProperty(layer, prop, value);
 
         const c = TIER[scheme];
+        const ink = scheme === "dark" ? "#f3e9df" : "#2b1d16";
+        const halo = scheme === "dark" ? "#1a1310" : "#fffdf9";
+        const labelLayout = {
+          "text-font": ["Noto Sans Regular"],
+          "text-anchor": "left" as const,
+          "text-offset": [0.75, 0] as [number, number],
+          "text-max-width": 9,
+          "text-optional": true,
+        };
+
+        // 1. OSM cafés with no recent evidence: faint dots, off by default
+        m.addSource("unverified", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: unverified.map(([lon, lat, name]) => ({ type: "Feature", geometry: { type: "Point", coordinates: [lon, lat] }, properties: { name } })),
+          },
+        });
+        m.addLayer({
+          id: "unverified", type: "circle", source: "unverified",
+          paint: { "circle-radius": 2.5, "circle-color": c.faint, "circle-opacity": 0.7 },
+        });
+
+        // 2. Independent and multi-branch cafés, clustered until street level so the specialty dots stay readable
+        m.addSource("others", { type: "geojson", data: othersData(others, state.current.kind), cluster: true, clusterRadius: 40, clusterMaxZoom: 13 });
+        m.addLayer({
+          id: "others-clusters", type: "circle", source: "others", filter: ["has", "point_count"],
+          paint: {
+            "circle-color": c.cluster,
+            "circle-opacity": 0.85,
+            "circle-radius": ["step", ["get", "point_count"], 11, 10, 14, 40, 18],
+            "circle-stroke-color": c.muted,
+            "circle-stroke-width": 1,
+          },
+        });
+        m.addLayer({
+          id: "others-count", type: "symbol", source: "others", filter: ["has", "point_count"],
+          layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": ["Noto Sans Regular"], "text-size": 11, "text-allow-overlap": true },
+          paint: { "text-color": ink },
+        });
+        m.addLayer({
+          id: "others", type: "circle", source: "others", filter: ["!", ["has", "point_count"]],
+          paint: {
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 3, 15, 6],
+            "circle-color": ["match", ["get", "cls"], "multibranch", c.muted, c.ring],
+            "circle-stroke-color": c.muted,
+            "circle-stroke-width": 1.5,
+          },
+        });
+        m.addLayer({
+          id: "others-labels", type: "symbol", source: "others", minzoom: 14, filter: ["!", ["has", "point_count"]],
+          layout: { ...labelLayout, "text-field": ["get", "label"], "text-size": 12, "symbol-sort-key": 3 },
+          paint: { "text-color": c.muted, "text-halo-color": halo, "text-halo-width": 1.6 },
+        });
+
+        // 3. Specialty cafés on top, never clustered, with their names beside the dots
         m.addSource("cafes", {
           type: "geojson",
           data: {
@@ -94,15 +183,12 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
             features: points.map((p) => ({
               type: "Feature",
               geometry: { type: "Point", coordinates: [p.lon, p.lat] },
-              // Short label for the map; the hover card keeps the full name
-              properties: { ...p, label: p.name.replace(/\s*\(.*?\)\s*/g, " ").trim() },
+              properties: { ...p, label: shortLabel(p.name) },
             })),
           },
         });
         m.addLayer({
-          id: "cafes",
-          type: "circle",
-          source: "cafes",
+          id: "cafes", type: "circle", source: "cafes",
           paint: {
             "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 15, 8],
             "circle-color": ["match", ["get", "tier"], "acclaimed", c.acclaimed, "recognised", c.recognised, c.ring],
@@ -110,58 +196,62 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
             "circle-stroke-width": ["match", ["get", "tier"], "indie", 2.2, 1.5],
           },
         });
-        // Café names beside the dots. MapLibre hides labels that would collide, so more appear as you zoom in;
-        // acclaimed cafés get first claim on the space.
+        // MapLibre hides labels that would collide, so more appear as you zoom in; acclaimed cafés get first claim.
         m.addLayer({
-          id: "cafe-labels",
-          type: "symbol",
-          source: "cafes",
+          id: "cafe-labels", type: "symbol", source: "cafes",
           layout: {
+            ...labelLayout,
             "text-field": ["get", "label"],
-            "text-font": ["Noto Sans Regular"],
             "text-size": ["interpolate", ["linear"], ["zoom"], 10, 11, 15, 13],
-            "text-anchor": "left",
-            "text-offset": [0.75, 0],
-            "text-max-width": 9,
-            "text-optional": true,
             "symbol-sort-key": ["match", ["get", "tier"], "acclaimed", 0, "recognised", 1, 2],
           },
-          paint: {
-            "text-color": scheme === "dark" ? "#f3e9df" : "#2b1d16",
-            "text-halo-color": scheme === "dark" ? "#1a1310" : "#fffdf9",
-            "text-halo-width": 1.6,
-          },
+          paint: { "text-color": ink, "text-halo-color": halo, "text-halo-width": 1.6 },
         });
-        applyFilter(m, tierRef.current);
+        applyFilters(m, state.current, others);
         if (!center) {
           const b = new LngLatBounds();
           points.forEach((p) => b.extend([p.lon, p.lat]));
           m.fitBounds(b, { padding: 48, duration: 0, maxZoom: 14 });
         }
-        // Hover (mouse): a light card with the details follows the pointer.
-        // Click / tap (and touch screens): the card stays, with a link to the café's page.
+
+        // Hover (mouse): a light card follows the pointer. Click / tap: the card stays, with a link.
         const hover = new Popup({ offset: 12, maxWidth: "280px", closeButton: false, closeOnClick: false });
         const coordsOf = (f: { geometry: unknown }) => (f.geometry as { coordinates: [number, number] }).coordinates;
-        for (const layer of ["cafes", "cafe-labels"]) {
-          m.on("mousemove", layer, (e) => {
-            const f = e.features?.[0];
-            if (!f) return;
-            m.getCanvas().style.cursor = "pointer";
-            hover.setLngLat(coordsOf(f)).setHTML(cardHtml(f.properties as unknown as MapPoint, false)).addTo(m);
-          });
-          m.on("mouseleave", layer, () => {
-            m.getCanvas().style.cursor = "";
-            hover.remove();
-          });
-          m.on("click", layer, (e) => {
-            const f = e.features?.[0];
-            if (!f) return;
-            hover.remove();
-            new Popup({ offset: 12, maxWidth: "280px" }).setLngLat(coordsOf(f)).setHTML(cardHtml(f.properties as unknown as MapPoint, true)).addTo(m);
-          });
+        const cards: [string[], (props: any, link: boolean) => string][] = [
+          [["cafes", "cafe-labels"], specialtyCard],
+          [["others", "others-labels"], otherCard],
+          [["unverified"], (p) => unverifiedCard(p.name)],
+        ];
+        for (const [layers, render] of cards) {
+          for (const layer of layers) {
+            m.on("mousemove", layer, (e) => {
+              const f = e.features?.[0];
+              if (!f) return;
+              m.getCanvas().style.cursor = "pointer";
+              hover.setLngLat(coordsOf(f)).setHTML(render(f.properties, false)).addTo(m);
+            });
+            m.on("mouseleave", layer, () => {
+              m.getCanvas().style.cursor = "";
+              hover.remove();
+            });
+            m.on("click", layer, (e) => {
+              const f = e.features?.[0];
+              if (!f) return;
+              hover.remove();
+              new Popup({ offset: 12, maxWidth: "280px" }).setLngLat(coordsOf(f)).setHTML(render(f.properties, true)).addTo(m);
+            });
+          }
         }
+        // A cluster zooms in to the level where it splits
+        m.on("click", "others-clusters", async (e) => {
+          const f = e.features?.[0];
+          if (!f) return;
+          const zoomTo = await (m.getSource("others") as GeoJSONSource).getClusterExpansionZoom(f.properties.cluster_id);
+          m.easeTo({ center: coordsOf(f), zoom: zoomTo, duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 400 });
+        });
+        m.on("mouseenter", "others-clusters", () => (m.getCanvas().style.cursor = "pointer"));
+        m.on("mouseleave", "others-clusters", () => (m.getCanvas().style.cursor = ""));
       });
-      if (reduced) map.on("load", () => map?.jumpTo({ center: map.getCenter() }));
     };
 
     build();
@@ -171,47 +261,92 @@ export default function CafeMap({ points }: { points: MapPoint[] }) {
       map?.remove();
       mapRef.current = null;
     };
-  }, [points]);
+  }, [points, others, unverified]);
 
-  // Tier filter: setFilter, no re-render of the map
+  // Filters: setFilter / setData, no rebuild of the map
   useEffect(() => {
     const m = mapRef.current;
-    if (m?.getLayer("cafes")) applyFilter(m, tier);
-  }, [tier]);
+    if (m?.getLayer("cafes")) applyFilters(m, { kind, tier, showUnverified }, others);
+  }, [kind, tier, showUnverified, others]);
 
-  const count = tier === "all" ? points.length : points.filter((p) => p.tier === tier).length;
+  const nSpecialty = kind === "all" || kind === "specialty" ? (tier === "all" ? points.length : points.filter((p) => p.tier === tier).length) : 0;
+  const nOthers = kind === "specialty" ? 0 : others.filter((o) => kind === "all" || o.cls === kind).length;
+  const showTiers = kind === "specialty";
 
   return (
     <div className="grid gap-3">
-      <div role="group" aria-label="Filter by tier" className="flex flex-wrap items-center gap-2">
-        {(["all", "acclaimed", "recognised", "indie"] as TierFilter[]).map((t) => (
-          <button
-            key={t}
-            type="button"
-            aria-pressed={tier === t}
-            onClick={() => setTier(t)}
-            className={cn(
-              "min-h-11 rounded-full border px-4 text-sm font-medium capitalize transition-colors",
-              tier === t ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-muted",
-            )}
-          >
-            {t === "all" ? "All tiers" : t}
-          </button>
-        ))}
-        <span className="ml-auto font-mono text-xs text-muted-foreground" aria-live="polite">{count} branches on the map</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Filter by kind of café" className="flex flex-wrap gap-2">
+          {KINDS.map((k) => (
+            <button
+              key={k.id}
+              type="button"
+              aria-pressed={kind === k.id}
+              onClick={() => setKind(k.id)}
+              className={cn(
+                "min-h-11 rounded-full border px-4 text-sm font-medium transition-colors",
+                kind === k.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-muted",
+              )}
+            >
+              {k.label}
+            </button>
+          ))}
+        </div>
+        {showTiers && (
+          <div role="group" aria-label="Filter specialty cafés by tier" className="flex flex-wrap gap-2">
+            {(["all", "acclaimed", "recognised", "indie"] as TierFilter[]).map((t) => (
+              <button
+                key={t}
+                type="button"
+                aria-pressed={tier === t}
+                onClick={() => setTier(t)}
+                className={cn(
+                  "min-h-11 rounded-full border px-4 text-sm font-medium capitalize transition-colors",
+                  tier === t ? "border-primary-strong bg-card text-foreground ring-1 ring-primary-strong" : "border-border bg-card hover:bg-muted",
+                )}
+              >
+                {t === "all" ? "All tiers" : t}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5"><span className="tier-dot" data-tier="acclaimed" />specialty (by tier)</span>
+        <span className="inline-flex items-center gap-1.5"><span className="tier-dot" data-tier="independent" />independent</span>
+        <span className="inline-flex items-center gap-1.5"><span className="tier-dot" data-tier="multibranch" />multi-branch</span>
+        <label className="inline-flex min-h-11 cursor-pointer items-center gap-2">
+          <input type="checkbox" checked={showUnverified} onChange={(e) => setShowUnverified(e.target.checked)} className="size-4 accent-[var(--primary-strong)]" />
+          Show {unverified.length} unverified OSM cafés
+        </label>
+        <span className="ml-auto font-mono text-xs" aria-live="polite">{nSpecialty + nOthers} cafés on the map</span>
       </div>
       <div
         ref={box}
         className="h-[min(70dvh,640px)] min-h-[380px] overflow-hidden rounded-2xl border border-border bg-muted"
         role="region"
-        aria-label="Interactive map of specialty cafés. The café directory has the same places as a list."
+        aria-label="Interactive map of independent cafés. The café directory has the same places as a list."
       />
     </div>
   );
 }
 
-function applyFilter(m: MapLibreMap, tier: TierFilter) {
-  const f: ExpressionSpecification | null = tier === "all" ? null : ["==", ["get", "tier"], tier];
-  m.setFilter("cafes", f);
-  if (m.getLayer("cafe-labels")) m.setFilter("cafe-labels", f);
+function othersData(others: OtherPoint[], kind: Kind): Extract<GeoJSONSourceSpecification["data"], { type: "FeatureCollection" }> {
+  const keep = kind === "all" ? others : kind === "specialty" ? [] : others.filter((o) => o.cls === kind);
+  return {
+    type: "FeatureCollection",
+    features: keep.map((o) => ({ type: "Feature", geometry: { type: "Point", coordinates: [o.lon, o.lat] }, properties: { ...o, label: shortLabel(o.name) } })),
+  };
+}
+
+function applyFilters(m: MapLibreMap, s: { kind: Kind; tier: TierFilter; showUnverified: boolean }, others: OtherPoint[]) {
+  const specialtyOn = s.kind === "all" || s.kind === "specialty";
+  const tierFilter: ExpressionSpecification | null = s.tier === "all" || s.kind !== "specialty" ? null : ["==", ["get", "tier"], s.tier];
+  for (const id of ["cafes", "cafe-labels"]) {
+    m.setLayoutProperty(id, "visibility", specialtyOn ? "visible" : "none");
+    m.setFilter(id, tierFilter);
+  }
+  // Clusters are computed from the source data, so the kind filter swaps the data rather than filtering layers
+  (m.getSource("others") as GeoJSONSource).setData(othersData(others, s.kind));
+  m.setLayoutProperty("unverified", "visibility", s.showUnverified ? "visible" : "none");
 }

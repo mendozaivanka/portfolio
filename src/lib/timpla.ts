@@ -1,4 +1,5 @@
 import shopsJson from "@/data/timpla/shops.json";
+import directoryJson from "@/data/timpla/directory.json";
 import type { BranchRow } from "@/components/timpla/BranchList";
 
 export type Branch = {
@@ -12,6 +13,11 @@ export type Shop = {
 };
 
 export const shops = shopsJson as Shop[];
+
+export const instagramUrl = (h: string) => {
+  const handle = h.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*/, "").trim();
+  return handle ? { handle, url: `https://www.instagram.com/${handle}/` } : null;
+};
 
 export const TIER_TEXT: Record<Shop["tier"], string> = {
   acclaimed: "2+ independent write-ups, or an award",
@@ -29,9 +35,41 @@ export const shortBeans = (s: string) => {
   return t.length > 42 ? t.slice(0, 40).trimEnd() + "…" : t;
 };
 
+/** A café in the wider directory: no receipt page, just where it is and why we think it's open. */
+export type Independent = {
+  id: string; name: string; cls: "independent" | "multibranch"; city: string; lon: number; lat: number;
+  n: number; ev: "osm_check" | "overture_2026_09"; evd: string; ig: string; web: string;
+};
+export const independents = directoryJson as Independent[];
+
+export const CLASS_TEXT = {
+  specialty: "Roasts, names its roaster or origin, or brews by method; checked open in 2025–26",
+  independent: "No chain signal found, seen recently by OpenStreetMap or a live business page",
+  multibranch: "A local brand with 4–9 locations in Metro Manila",
+} as const;
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthYear = (d: string) => (d.length >= 7 ? `${MONTHS[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}` : d);
+/** "Checked on OpenStreetMap, Mar 2025" / "Business page live, Sep 2026" */
+export const evidenceText = (ev: string, date: string) =>
+  ev === "osm_check" ? `Checked on OpenStreetMap, ${monthYear(date)}`
+  : ev === "overture_2026_09" ? `Business page live, ${monthYear(date)}`
+  : "Press or own site, 2025–26";
+
+/** Where a directory café links to: its Instagram, its site, or its OpenStreetMap entry. */
+export const outLink = (c: Pick<Independent, "id" | "ig" | "web">) => {
+  const ig = c.ig && instagramUrl(c.ig);
+  if (ig) return { href: ig.url, label: "Instagram" };
+  if (c.web) return { href: c.web.startsWith("http") ? c.web : `https://${c.web}`, label: "Website" };
+  const type = { n: "node", w: "way", r: "relation" }[c.id[0]] ?? "node";
+  return { href: `https://www.openstreetmap.org/${type}/${c.id.slice(1)}`, label: "OpenStreetMap" };
+};
+
 /** One row per branch, best tier first, then most written-about. */
 export const branchRows: BranchRow[] = shops.flatMap((s) =>
   s.branches.map((b) => ({
+    cls: "specialty" as const,
+    href: `/timpla/cafes/${s.slug}/`,
     slug: s.slug,
     name: s.name,
     branch: s.branches.length > 1 ? b.name : "",
@@ -43,7 +81,17 @@ export const branchRows: BranchRow[] = shops.flatMap((s) =>
   })),
 );
 
-export const instagramUrl = (h: string) => {
-  const handle = h.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*/, "").trim();
-  return handle ? { handle, url: `https://www.instagram.com/${handle}/` } : null;
-};
+/** The whole directory: specialty branches first (as above), then everyone else by city and name. */
+export const directoryRows: BranchRow[] = [
+  ...branchRows,
+  ...[...independents]
+    .sort((a, b) => a.city.localeCompare(b.city) || a.name.localeCompare(b.name))
+    .map((c) => {
+      const link = outLink(c);
+      return {
+        cls: c.cls, href: link.href, external: link.label, slug: c.id, name: c.name, branch: "",
+        where: c.city, city: c.city, beans: c.cls === "multibranch" ? `${c.n} locations` : "",
+        since: "", evidence: evidenceText(c.ev, c.evd),
+      };
+    }),
+];

@@ -2,28 +2,44 @@
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
 import BranchList from "@/components/timpla/BranchList";
 import meta from "@/data/timpla/meta.json";
-import { branchRows, TIER_TEXT } from "@/lib/timpla";
+import { directoryRows, CLASS_TEXT } from "@/lib/timpla";
+
+const d = meta.directory;
+const classes = [
+  { id: "specialty", label: "Specialty", n: d.classes.specialty },
+  { id: "independent", label: "Independent", n: d.classes.independent },
+  { id: "multibranch", label: "Multi-branch", n: d.classes.multibranch },
+] as const;
 ---
 
-<TimplaLayout title="Cafés" current="cafes" description={`All ${meta.branches} specialty café branches in Metro Manila, with sources.`}>
+<TimplaLayout
+  title="Cafés"
+  current="cafes"
+  description={`${d.shops} independent cafés in Metro Manila, ${meta.shops} of them verified specialty, each with evidence it's open.`}
+>
   <section class="grid gap-5 pt-10">
     <div>
       <span class="label-mono">Directory</span>
-      <h1 class="mt-1 font-serif text-[clamp(2.25rem,6vw,3.25rem)] leading-tight font-normal">{meta.shops} cafés, {meta.branches} branches</h1>
+      <h1 class="mt-1 font-serif text-[clamp(2.25rem,6vw,3.25rem)] leading-tight font-normal">{d.shops} cafés, {d.branches} branches</h1>
+      <p class="mt-2 max-w-[62ch] text-muted-foreground">
+        Every independent café we could find with recent evidence it's open. Chains (10 or more locations, or a known
+        franchise) are left out. Specialty cafés have a receipt page; the rest link to their Instagram, site or map entry.{" "}
+        <a href="/timpla/data/" class="font-medium text-primary-strong underline underline-offset-4">How we decide</a>.
+      </p>
     </div>
     <dl class="grid max-w-3xl gap-2 text-sm sm:grid-cols-3">
       {
-        (["acclaimed", "recognised", "indie"] as const).map((t) => (
+        classes.map((c) => (
           <div class="flex gap-2">
-            <span class="tier-dot mt-1" data-tier={t} />
+            <span class="tier-dot mt-1" data-tier={c.id === "specialty" ? "acclaimed" : c.id} />
             <div>
-              <dt class="font-semibold capitalize">{t} · {meta.tiers[t]}</dt>
-              <dd class="m-0 text-muted-foreground">{TIER_TEXT[t]}</dd>
+              <dt class="font-semibold">{c.label} · {c.n}</dt>
+              <dd class="m-0 text-muted-foreground">{CLASS_TEXT[c.id]}</dd>
             </div>
           </div>
         ))
       }
     </dl>
-    <BranchList client:load rows={branchRows} full />
+    <BranchList client:load rows={directoryRows} full />
   </section>
 </TimplaLayout>
