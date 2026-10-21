@@ -1,0 +1,82 @@
+---
+import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
+import meta from "@/data/timpla/meta.json";
+import { TIER_TEXT } from "@/lib/timpla";
+
+const sources = [
+  ["OpenStreetMap", "Café locations and all-café counts; © OpenStreetMap contributors, ODbL.", "https://www.openstreetmap.org/copyright"],
+  ["OpenFreeMap", "Basemap tiles on the interactive map.", "https://openfreemap.org"],
+  ["Philippine Statistics Authority (OpenSTAT)", "Green coffee production by province, 2022–2025.", "https://openstat.psa.gov.ph"],
+  ["Editorial guides", "Tatler, Spot.ph, Philstar, GMA, The Beat, TripZilla, Lifestyle Asia and others; cited on each café's page.", ""],
+  ["Roasters' own shops", "Bean origins and prices from their public product listings, linked per product.", ""],
+  ["Festival lineups and stockist lists", "KapeCon, Philippine Coffee Expo, roasters' 'where to find our beans' pages.", ""],
+  ["Marikina Local Coffee Shop Directory", "Data from the Marikina Local Coffee Shop Directory, licensed CC BY 4.0.", "https://marikina-cafes.vercel.app"],
+];
+---
+
+<TimplaLayout title="About the data" current="data" description="How Timpla decides which cafés to include, and where every number comes from.">
+  <article class="grid max-w-3xl gap-10 pt-10 text-[17px] leading-relaxed">
+    <header>
+      <span class="label-mono">Methods</span>
+      <h1 class="mt-1 font-serif text-[clamp(2.25rem,6vw,3.25rem)] leading-tight font-normal">About the data</h1>
+      <p class="mt-3 text-muted-foreground">Built {meta.builtAt}. {meta.shops} shops and {meta.branches} branches pass the rules below; {meta.mapped} branches are mapped.</p>
+    </header>
+
+    <section>
+      <h2 class="font-serif text-3xl font-normal">Who's in</h2>
+      <p>A café is listed when all three of these hold:</p>
+      <ol class="grid gap-2 pl-5">
+        <li><strong>It's in Metro Manila.</strong> Checked against city boundaries. BGC is labelled Taguig, following the 2022 Supreme Court ruling, even where older boundary files still draw it inside Makati.</li>
+        <li><strong>It's specialty.</strong> It roasts its own beans, names a specialty roaster or origin, brews by method, or appears on a roaster's stockist list or a coffee-festival lineup. Chains aren't included.</li>
+        <li><strong>It's open.</strong> There's evidence from 2025 or 2026: its own site or menu, a recent article, a festival lineup, or a recent OpenStreetMap check. "Unclear" is not "closed": those cafés are left out until someone confirms them.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2 class="font-serif text-3xl font-normal">Tiers measure press, not quality</h2>
+      <dl class="mt-3 grid gap-3">
+        {
+          (["acclaimed", "recognised", "indie"] as const).map((t) => (
+            <div class="flex gap-3">
+              <span class="tier-dot mt-2" data-tier={t} />
+              <div>
+                <dt class="font-semibold capitalize">{t} · {meta.tiers[t]} shops</dt>
+                <dd class="m-0 text-muted-foreground">{TIER_TEXT[t]}</dd>
+              </div>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="mt-3 text-muted-foreground">An indie café isn't worse; it just hasn't been written about yet. There are no Google or Foursquare ratings anywhere on this site: their terms don't allow storing or republishing them.</p>
+    </section>
+
+    <section>
+      <h2 class="font-serif text-3xl font-normal">Known gaps</h2>
+      <ul class="grid gap-2 pl-5 text-muted-foreground">
+        <li>Many small cafés exist only on Instagram, which we don't collect from, so the indie tier is undercounted.</li>
+        <li>Press coverage leans to Makati, BGC and Quezon City; the north of the metro is thin in both press and map data.</li>
+        <li>Some opening years are upper bounds ("operating by 2016").</li>
+        <li>{meta.branches - meta.mapped} branches have no verified location yet and appear only in the directory.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="font-serif text-3xl font-normal">Sources and credits</h2>
+      <ul class="m-0 mt-3 grid list-none gap-3 p-0">
+        {
+          sources.map(([name, text, url]) => (
+            <li>
+              {url ? <a href={url} rel="noopener" target="_blank" class="font-semibold underline underline-offset-4">{name}</a> : <span class="font-semibold">{name}</span>}
+              <span class="text-muted-foreground"> · {text}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="font-serif text-3xl font-normal">Spot a mistake?</h2>
+      <p class="text-muted-foreground">Closed café, wrong address, a place we missed? <a href="mailto:mendozaivanka@gmail.com?subject=Timpla%20correction" class="font-medium text-primary-strong underline underline-offset-4">Email a correction</a> with a link as evidence.</p>
+    </section>
+  </article>
+</TimplaLayout>

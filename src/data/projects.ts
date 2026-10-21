@@ -217,6 +217,26 @@ export const projects: Project[] = [
     ],
     // Add a GitHub or live link here when it's public
     links: [],
+  },
+  {
+    title: "Timpla",
+    year: 2026,
+    period: "2026–",
+    kind: "personal",
+    categories: ["data", "automation"],
+    description:
+      "A sourced map of Metro Manila's specialty coffee scene: 109 cafés and 174 branches, who roasts for whom, where the beans grow and when each place opened. Built from free, open data with an automated research pipeline; no star ratings, just receipts.",
+    summary: "A sourced map of Metro Manila's specialty coffee: 109 cafés, where the beans grow, and who roasts for whom.",
+    results: ["109 cafés", "174 branches"],
+    tags: ["Data viz", "MapLibre", "Python", "Astro"],
+    tint: "rosas",
+    preview: [
+      "**timpla** · built 2026-10-21",
+      "  shops ==109== · branches 174",
+      "  Benguet on menus 29% · harvest 12%",
+      "  Sultan Kudarat menus 5% · harvest ==52%==",
+    ],
+    links: [{ label: "Open Timpla", href: "/timpla/" }],
     featured: true,
   },
 ];

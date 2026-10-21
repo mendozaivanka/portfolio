@@ -1,0 +1,26 @@
+---
+import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
+import CafeMap from "@/components/timpla/CafeMap";
+import points from "@/data/timpla/points.json";
+import meta from "@/data/timpla/meta.json";
+
+const mapPoints = points.map(({ slug, name, branch, tier, city, nb, lon, lat }) => ({ slug, name, branch, tier, city, nb, lon, lat }));
+---
+
+<TimplaLayout title="Map" current="map" description={`An interactive map of ${meta.mapped} specialty café branches in Metro Manila.`}>
+  <section class="grid gap-5 pt-10">
+    <div>
+      <span class="label-mono">Map</span>
+      <h1 class="mt-1 font-serif text-[clamp(2.25rem,6vw,3.25rem)] leading-tight font-normal">Where specialty coffee is</h1>
+      <p class="mt-2 max-w-[60ch] text-muted-foreground">
+        {meta.mapped} of {meta.branches} branches have a location we could verify. Tap a dot for its receipt. Prefer a list?{" "}
+        <a href="/timpla/cafes/" class="font-medium text-primary-strong underline underline-offset-4">The directory</a> has every branch.
+      </p>
+    </div>
+    <CafeMap client:visible points={mapPoints as any} />
+    <p class="text-[13px] text-muted-foreground">
+      {meta.branches - meta.mapped} branches have no verified coordinates yet and appear only in the directory. Basemap ©
+      OpenFreeMap, © OpenMapTiles, © OpenStreetMap contributors.
+    </p>
+  </section>
+</TimplaLayout>

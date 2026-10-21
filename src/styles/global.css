@@ -198,3 +198,57 @@
     opacity: 0;
   }
 }
+
+/* ───────── Timpla (café data-viz project) ───────── */
+:root {
+  --tier-acclaimed: #7a2a49;
+  --tier-recognised: #b04a6f;
+  --tier-indie: #b04a6f; /* drawn as a ring */
+  --harvest: #9a6a14;
+  --paper: #fffdfa;
+  --paper-ink: #2b2226;
+  --paper-muted: #6f6066;
+  --paper-rule: #d9cfd2;
+}
+[data-theme="dark"] {
+  --tier-acclaimed: #f2a3bc;
+  --tier-recognised: #b55f80;
+  --tier-indie: #f2a3bc;
+  --harvest: #f1c77f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tier-acclaimed: #f2a3bc;
+    --tier-recognised: #b55f80;
+    --tier-indie: #f2a3bc;
+    --harvest: #f1c77f;
+  }
+}
+
+@layer components {
+  /* Thermal receipt: paper stays light in both themes; torn zigzag bottom edge */
+  .receipt {
+    --tooth: 7px;
+    background: var(--paper);
+    color: var(--paper-ink);
+    padding-bottom: calc(var(--tooth) + 0.875rem);
+    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+  }
+  .receipt-shadow {
+    filter: drop-shadow(0 1px 1px rgb(59 22 38 / 0.07)) drop-shadow(0 10px 18px rgb(59 22 38 / 0.1));
+  }
+  .receipt-rule {
+    border-top: 1.5px dashed var(--paper-rule);
+  }
+  .tier-dot {
+    display: inline-block;
+    flex: none;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+  }
+  .tier-dot[data-tier="acclaimed"] { background: var(--tier-acclaimed); }
+  .tier-dot[data-tier="recognised"] { background: var(--tier-recognised); }
+  .tier-dot[data-tier="indie"] { border: 2px solid var(--tier-indie); background: transparent; }
+}

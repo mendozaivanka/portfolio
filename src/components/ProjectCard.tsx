@@ -128,9 +128,9 @@ export default function ProjectCard({ project, variant = "full", headingLevel = 
   if (variant === "link") {
     return (
       <a
-        href="/projects/"
+        href={links[0]?.href.startsWith("/") ? links[0].href : "/projects/"}
         className="group flex h-full rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        aria-label={`${project.title}: see all projects`}
+        aria-label={links[0]?.href.startsWith("/") ? `${project.title}: ${links[0].label}` : `${project.title}: see all projects`}
       >
         <Card className="h-full w-full transition-[transform,box-shadow] group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-rosas-3 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
           <Preview project={project} />

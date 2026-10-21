@@ -1,0 +1,38 @@
+---
+// Static map of Metro Manila: simplified city outlines + one dot per mapped branch, rendered at build time.
+import ncr from "@/data/timpla/ncr.json";
+import points from "@/data/timpla/points.json";
+
+type Props = { highlight?: string; class?: string; label?: string };
+const { highlight, class: cls = "", label } = Astro.props;
+const shown = highlight ? points.filter((p) => p.slug === highlight) : points;
+const others = highlight ? points.filter((p) => p.slug !== highlight) : [];
+const order = { indie: 0, recognised: 1, acclaimed: 2 } as Record<string, number>;
+const sorted = [...shown].sort((a, b) => order[a.tier] - order[b.tier]);
+---
+
+<svg
+  viewBox="0 0 300 380"
+  class={`block h-auto w-full ${cls}`}
+  role="img"
+  aria-label={label ?? `Map of Metro Manila with ${points.length} specialty café branches; most cluster in Makati, Taguig and Quezon City.`}
+>
+  <path d={ncr.path} fill="var(--muted)" stroke="var(--border)" stroke-width="1"></path>
+  {others.map((p) => <circle cx={p.xy[0]} cy={p.xy[1]} r="2.5" fill="var(--muted-foreground)" opacity="0.35"></circle>)}
+  {
+    sorted.map((p) =>
+      p.tier === "indie" ? (
+        <circle cx={p.xy[0]} cy={p.xy[1]} r={highlight ? 6 : 3.6} fill="var(--card)" stroke="var(--tier-indie)" stroke-width="1.8"></circle>
+      ) : (
+        <circle
+          cx={p.xy[0]}
+          cy={p.xy[1]}
+          r={highlight ? 6 : 4}
+          fill={p.tier === "acclaimed" ? "var(--tier-acclaimed)" : "var(--tier-recognised)"}
+          stroke="var(--card)"
+          stroke-width="1.2"
+        ></circle>
+      ),
+    )
+  }
+</svg>
