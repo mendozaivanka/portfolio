@@ -33,7 +33,7 @@ export default function ProjectGrid({ projects, headingLevel = "h2" }: Props) {
 
       <TabsContent value={filter}>
         {shown.length > 0 ? (
-          <ul className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">
+          <ul className="grid list-none auto-rows-fr grid-cols-1 gap-4 p-0 md:grid-cols-2">
             {shown.map((p) => (
               <li key={p.title} className="flex">
                 <ProjectCard project={p} headingLevel={headingLevel} />

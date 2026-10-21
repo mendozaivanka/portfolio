@@ -16,7 +16,17 @@ const tintClass: Record<Tint, string> = {
   mangga: "bg-mangga/45",
 };
 
-const titleClass = "font-heading text-xl leading-snug font-medium";
+/*
+ * Every card shares one skeleton with fixed-size slots, so a grid of them lines up:
+ *   preview   (fixed height: exactly four mono lines)
+ *   meta      (one line)
+ *   title     (reserved for two lines)
+ *   summary   (clamped to three lines on the home page; full text on the projects page)
+ *   results + tags  (pinned to the bottom)
+ *   links     (projects page only, when any)
+ */
+const PREVIEW_LINES = 4;
+const titleClass = "font-heading text-xl leading-snug font-medium min-h-[calc(2*1.375*1.25rem)]";
 
 /** Turn the preview mini-markup (**rose**, ==gold==) into elements. Unbalanced markers render as plain text. */
 function renderPreviewLine(line: string): ReactNode[] {
@@ -39,59 +49,66 @@ function renderPreviewLine(line: string): ReactNode[] {
 
 /** Little terminal window with illustrative output. Decorative: the description carries the meaning. */
 function Preview({ project }: { project: Project }) {
+  // Always render exactly PREVIEW_LINES rows so every preview is the same height
+  const lines = [...project.preview.slice(0, PREVIEW_LINES)];
+  while (lines.length < PREVIEW_LINES) lines.push("");
   return (
-    <div className={cn("mx-3 overflow-hidden rounded-md border border-border", tintClass[project.tint])} aria-hidden="true">
+    <div className={cn("mx-3 shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])} aria-hidden="true">
       <div className="flex gap-1.5 border-b border-border/70 px-2.5 py-2">
         <i className="size-1.75 rounded-full bg-foreground/20" />
         <i className="size-1.75 rounded-full bg-foreground/20" />
         <i className="size-1.75 rounded-full bg-foreground/20" />
       </div>
       <div className="overflow-x-auto px-3.5 pt-3 pb-3.5 font-mono text-xs leading-[1.75] whitespace-pre text-foreground">
-        {project.preview.map((line, i) => (
-          <div key={i}>{renderPreviewLine(line)}</div>
+        {lines.map((line, i) => (
+          <div key={i} className="h-[1.75em]">
+            {renderPreviewLine(line)}
+          </div>
         ))}
       </div>
     </div>
   );
 }
 
-/** Employer + period for work projects, year for personal ones. */
+/** Employer + period for work projects, year for personal ones. One line, always present. */
 function Meta({ project }: { project: Project }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-muted-foreground">
-      {project.kind === "work" && project.org && (
-        <span className="inline-flex items-center gap-1">
-          <BriefcaseBusinessIcon className="size-3" aria-hidden="true" />
-          {project.org}
+    <div className="flex h-5 items-center gap-x-2 overflow-hidden font-mono text-xs whitespace-nowrap text-muted-foreground">
+      {project.kind === "work" && project.org ? (
+        <span className="inline-flex min-w-0 items-center gap-1">
+          <BriefcaseBusinessIcon className="size-3 shrink-0" aria-hidden="true" />
+          <span className="truncate">{project.org}</span>
         </span>
+      ) : (
+        <span>Side project</span>
       )}
-      <span className="tabular-nums">{project.period ?? project.year}</span>
+      <span aria-hidden="true">·</span>
+      <span className="shrink-0 tabular-nums">{project.period ?? project.year}</span>
     </div>
   );
 }
 
-function Results({ results }: { results?: string[] }) {
-  if (!results?.length) return null;
+/** Results (gold) and tags (outline) together at the bottom of the card. */
+function Footer({ project }: { project: Project }) {
   return (
-    <ul className="flex list-none flex-wrap gap-1.5 p-0" aria-label="Results">
-      {results.map((r) => (
-        <li key={r}>
-          <Badge className="bg-mangga text-foreground">{r}</Badge>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function Tags({ tags }: { tags: string[] }) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {tags.map((t) => (
-        <Badge key={t} variant="outline" className="h-auto max-w-full whitespace-normal">
-          {t}
-        </Badge>
-      ))}
-    </div>
+    <CardContent className="mt-auto grid gap-2">
+      {project.results && project.results.length > 0 && (
+        <ul className="flex list-none flex-wrap gap-1.5 p-0" aria-label="Results">
+          {project.results.map((r) => (
+            <li key={r}>
+              <Badge className="bg-mangga text-foreground">{r}</Badge>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-wrap gap-1.5">
+        {project.tags.map((t) => (
+          <Badge key={t} variant="outline" className="h-auto max-w-full whitespace-normal">
+            {t}
+          </Badge>
+        ))}
+      </div>
+    </CardContent>
   );
 }
 
@@ -112,42 +129,36 @@ export default function ProjectCard({ project, variant = "full", headingLevel = 
     return (
       <a
         href="/projects/"
-        className="group block h-full rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="group flex h-full rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         aria-label={`${project.title}: see all projects`}
       >
-        <Card className="h-full transition-[transform,box-shadow] group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-rosas-3 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+        <Card className="h-full w-full transition-[transform,box-shadow] group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-rosas-3 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
           <Preview project={project} />
           <CardHeader>
             <Meta project={project} />
             <Heading className={cn(titleClass, "flex items-start justify-between gap-3")}>
               <span className="min-w-0 break-words">{project.title}</span>
-              <ArrowUpRightIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary-strong" />
+              <ArrowUpRightIcon className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary-strong" />
             </Heading>
-            <CardDescription>{project.summary ?? project.description}</CardDescription>
+            <CardDescription className="line-clamp-3">{project.summary ?? project.description}</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-2.5">
-            <Results results={project.results} />
-            <Tags tags={project.tags} />
-          </CardContent>
+          <Footer project={project} />
         </Card>
       </a>
     );
   }
 
   return (
-    <Card className="h-full">
+    <Card className="h-full w-full">
       <Preview project={project} />
       <CardHeader>
         <Meta project={project} />
         <Heading className={cn(titleClass, "min-w-0 break-words")}>{project.title}</Heading>
         <CardDescription>{project.description}</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-2.5">
-        <Results results={project.results} />
-        <Tags tags={project.tags} />
-      </CardContent>
+      <Footer project={project} />
       {links.length > 0 && (
-        <CardFooter className="mt-auto gap-2 border-t-0 pt-0">
+        <CardFooter className="gap-2 border-t-0 pt-0">
           {links.map((l, i) => (
             <Button key={l.label} asChild variant={i === 0 ? "secondary" : "ghost"} size="sm">
               <a href={l.href} {...(l.href.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})}>

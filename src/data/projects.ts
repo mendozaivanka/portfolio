@@ -54,27 +54,6 @@ const GENPACT = "Genpact";
 
 export const projects: Project[] = [
   {
-    title: "Prompt Garden",
-    year: 2026,
-    period: "2026–",
-    kind: "personal",
-    categories: ["prompting", "evals"],
-    description:
-      "My own tool: a versioned prompt library with side-by-side evals, so you can see whether a prompt change actually made things better before it ships. Prompts are treated like code, with a pass rate per version. The card at the top of the home page is its dashboard.",
-    summary: "A versioned prompt library with side-by-side evals, so you can see whether a change actually helped. My own tool.",
-    tags: ["Prompt eng.", "Evals", "TypeScript", "Claude API"],
-    tint: "ube",
-    preview: [
-      "**summarise.prompt**  v3 → v4",
-      "  accuracy    82% → ==91%==",
-      "  avg tokens  412 → ==288==",
-      "  regressions ==0==",
-    ],
-    // Add a GitHub or live link here when it's public
-    links: [],
-    featured: true,
-  },
-  {
     title: "Anomaly Detection & Reporting",
     year: 2025,
     period: "2024–2026",
@@ -179,6 +158,7 @@ export const projects: Project[] = [
       "  next run in 60 min",
     ],
     links: [],
+    featured: true,
   },
   {
     title: "AI Inference in a Django App",
@@ -217,5 +197,26 @@ export const projects: Project[] = [
       "  report → weekly perf summary",
     ],
     links: [],
+  },
+  {
+    title: "Prompt Garden",
+    year: 2026,
+    period: "2026–",
+    kind: "personal",
+    categories: ["prompting", "evals"],
+    description:
+      "My own tool: a versioned prompt library with side-by-side evals, so you can see whether a prompt change actually made things better before it ships. Prompts are treated like code, with a pass rate per version. The card at the top of the home page is its dashboard.",
+    summary: "A versioned prompt library with side-by-side evals, so you can see whether a change actually helped. My own tool.",
+    tags: ["Prompt eng.", "Evals", "TypeScript", "Claude API"],
+    tint: "ube",
+    preview: [
+      "**summarise.prompt**  v3 → v4",
+      "  accuracy    82% → ==91%==",
+      "  avg tokens  412 → ==288==",
+      "  regressions ==0==",
+    ],
+    // Add a GitHub or live link here when it's public
+    links: [],
+    featured: true,
   },
 ];

@@ -179,8 +179,8 @@ const swatchClass: Record<string, string> = {
       </div>
       <Button asChild variant="outline" size="sm"><a href="/projects/">All projects <span aria-hidden="true">→</span></a></Button>
     </div>
-    <!-- With an odd number of cards, the last one spans the row instead of leaving a gap -->
-    <ul class="grid list-none gap-4 p-0 md:grid-cols-2 md:[&>li:last-child:nth-child(odd)]:col-span-2">
+    <!-- Six cards: 2×3 on tablets, 3×2 on desktop. auto-rows-fr makes every row the height of the tallest card -->
+    <ul class="grid list-none auto-rows-fr gap-4 p-0 md:grid-cols-2 lg:grid-cols-3">
       {
         featured.map((p) => (
           <li class="flex">
