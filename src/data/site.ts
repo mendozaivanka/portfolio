@@ -4,11 +4,11 @@ export const site = {
   name: "Ivanka",
   role: "AI & Automation Engineer",
   description:
-    "Ivanka is an AI, automation and prompt engineer who builds prompts, agents and workflows that quietly do the busywork.",
-  location: "Your City, XX",
-  // IANA time zone for the header clock, e.g. "Asia/Manila". Leave empty to use the visitor's own.
-  timeZone: "",
-  email: "hello@example.com",
+    "Ivanka Mendoza is an AI, automation and prompt engineer in Metro Manila who builds RAG pipelines, agents and workflows that quietly do the busywork.",
+  location: "Alabang, Muntinlupa",
+  // IANA time zone for the header clock. Leave empty to use the visitor's own.
+  timeZone: "Asia/Manila",
+  email: "mendozaivanka@gmail.com",
   available: true,
 };
 
@@ -37,6 +37,7 @@ export const passRates = [71, 74, 82, 80, 85, 88, 90, 93, 95];
 export const nav = [
   { label: "Projects", href: "/projects/" },
   { label: "Tools", href: "/tools/" },
+  { label: "CV", href: "/cv/" },
   { label: "Tala", href: "/tala/" },
   { label: "Contact", href: "/#contact" },
 ];

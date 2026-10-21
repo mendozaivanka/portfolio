@@ -11,11 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import me from "@/assets/me.jpeg";
+import { cv, formatDate } from "@/data/cv";
 import { passRates, prompts, site, socials } from "@/data/site";
 import { projects } from "@/data/projects";
 import { toolboxHighlights } from "@/data/tools";
 
 const featured = projects.filter((p) => p.featured);
+const currentRole = cv.experience.find((r) => r.end === null) ?? cv.experience[0];
 
 const gists = [
   {
@@ -206,6 +208,50 @@ const swatchClass: Record<string, string> = {
         ))
       }
     </div>
+  </section>
+
+  <!-- ───────── CV ───────── -->
+  <section class="reveal pt-10 sm:pt-14" id="cv">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <span class="label-mono">Curriculum vitae</span>
+        <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Where I've been</h2>
+      </div>
+      <Button asChild variant="outline" size="sm"><a href="/cv/">Full CV <span aria-hidden="true">→</span></a></Button>
+    </div>
+    <Card className="gap-0 py-0 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div class="grid content-start gap-3 border-b border-border p-5 md:border-r md:border-b-0 md:p-6">
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
+          <span>{formatDate(currentRole.start)} → {formatDate(currentRole.end)}</span>
+          {
+            currentRole.end === null && (
+              <Badge className="bg-pandan text-foreground">
+                <span class="status-dot" aria-hidden="true" />
+                now
+              </Badge>
+            )
+          }
+        </div>
+        <h3 class="font-heading text-xl leading-snug font-medium">{currentRole.title}</h3>
+        <p class="text-muted-foreground">{currentRole.company} · {currentRole.location}</p>
+        <p class="text-sm text-muted-foreground">{currentRole.bullets[0]}</p>
+        <p class="text-sm">
+          Before that: {cv.experience.length - 1} roles at {cv.experience[1]?.company}, and a
+          <span class="text-gold-ink"> {cv.education[0].honours.split(" · ")[0]}</span> B.S. in IT from {cv.education[0].school}.
+        </p>
+      </div>
+      <ul class="grid list-none grid-cols-2 gap-px bg-border p-0">
+        {
+          cv.impact.map((m) => (
+            <li class="grid content-start gap-1 bg-card p-5 md:p-6">
+              <span class="font-serif text-3xl leading-none tabular-nums sm:text-4xl">{m.value}</span>
+              <span class="text-sm font-medium">{m.label}</span>
+              <span class="text-xs text-muted-foreground">{m.note}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </Card>
   </section>
 
   <!-- ───────── About + socials ───────── -->

@@ -1,0 +1,68 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CvView from "@/components/CvView";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cv } from "@/data/cv";
+import { site } from "@/data/site";
+
+const { profile, impact } = cv;
+const current = cv.experience.find((r) => r.end === null);
+---
+
+<Layout
+  title={`CV — ${profile.fullName}`}
+  description={`${profile.fullName}: ${profile.title}. ${profile.summary.slice(0, 140)}…`}
+>
+  <!-- ───────── Masthead ───────── -->
+  <section class="reveal grid gap-4 pt-8 pb-6 sm:pt-14 sm:pb-8">
+    <span class="label-mono">Curriculum vitae</span>
+    <h1 class="font-serif text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] font-medium tracking-tight text-balance">
+      {profile.fullName.split(" ").slice(0, -1).join(" ")}
+      <em class="text-primary-strong italic">{profile.fullName.split(" ").at(-1)}</em>
+    </h1>
+    <p class="font-serif text-xl leading-snug text-balance sm:text-[22px]">
+      {profile.title}{current && <span class="text-muted-foreground"> · {current.company}</span>}
+    </p>
+    <p class="max-w-[68ch] text-muted-foreground">{profile.summary}</p>
+    <dl class="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[13px]">
+      <div class="flex gap-2"><dt class="text-muted-foreground">Based in</dt><dd>{profile.location}</dd></div>
+      <div class="flex gap-2">
+        <dt class="text-muted-foreground">Email</dt>
+        <dd><a href={`mailto:${profile.email}`} class="text-primary-strong underline decoration-primary-strong/30 underline-offset-4 hover:decoration-current">{profile.email}</a></dd>
+      </div>
+      {profile.phone && <div class="flex gap-2"><dt class="text-muted-foreground">Phone</dt><dd>{profile.phone}</dd></div>}
+    </dl>
+  </section>
+
+  <!-- ───────── Readings: the numbers ───────── -->
+  <section class="reveal print:break-inside-avoid" aria-label="Headline results">
+    <ul class="grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        impact.map((m) => (
+          <li class="flex">
+            <Card className="w-full gap-1 py-4">
+              <div class="px-4">
+                <div class="font-serif text-4xl leading-none tabular-nums">{m.value}</div>
+                <div class="mt-1.5 font-medium">{m.label}</div>
+                <div class="text-xs text-muted-foreground">{m.note}</div>
+              </div>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ───────── The CV, three ways ───────── -->
+  <section class="reveal pt-10 sm:pt-14">
+    <CvView client:load />
+  </section>
+
+  <section class="reveal pt-12 print:hidden">
+    <Card className="flex-row flex-wrap items-center justify-between gap-4 px-5">
+      <p class="text-muted-foreground">Want the long version, or a role-specific one? Ask.</p>
+      <Button asChild><a href={`mailto:${site.email}`}>Email me</a></Button>
+    </Card>
+  </section>
+</Layout>
