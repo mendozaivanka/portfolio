@@ -14,7 +14,10 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "timpla:data": "node scripts/build-timpla-data.ts"
+    "timpla:data": "node scripts/build-timpla-data.ts",
+    "data:export": "node scripts/export-data.ts",
+    "check": "astro check",
+    "resume:pdf": "node scripts/build-resume-pdf.ts"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.0",
@@ -41,6 +44,7 @@
     "@astrojs/check": "^0.9.11",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "playwright-core": "^1.64.1",
     "typescript": "^6.0.3"
   }
 }

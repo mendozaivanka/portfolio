@@ -118,8 +118,10 @@ function unverifiedCard(name: string) {
   return card(name, "", row("STATUS", "unverified") + row("SOURCE", "OpenStreetMap only"), "");
 }
 
-export default function CafeMap({ points, others, unverified }: {
+export default function CafeMap({ points, others, unverified, embed = false }: {
   points: MapPoint[]; others: OtherPoint[]; unverified: [number, number, string][];
+  /** Map only, filling its frame, for /timpla/embed/ (shown in an iframe on the portfolio). */
+  embed?: boolean;
 }) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -146,7 +148,8 @@ export default function CafeMap({ points, others, unverified }: {
         zoom: zoom ?? 11,
         maxZoom: 17,
         attributionControl: { compact: true },
-        cooperativeGestures: window.matchMedia("(pointer: coarse)").matches,
+        // Inside another page, scrolling should scroll that page: zoom needs ⌘/Ctrl + scroll (two fingers on touch)
+        cooperativeGestures: embed || window.matchMedia("(pointer: coarse)").matches,
       });
       mapRef.current = map;
       map.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
@@ -297,7 +300,7 @@ export default function CafeMap({ points, others, unverified }: {
       map?.remove();
       mapRef.current = null;
     };
-  }, [points, others, unverified]);
+  }, [points, others, unverified, embed]);
 
   // Filters: setFilter / setData, no rebuild of the map
   useEffect(() => {
@@ -308,6 +311,16 @@ export default function CafeMap({ points, others, unverified }: {
   const nSpecialty = kind === "all" || kind === "specialty" ? (tier === "all" ? points.length : points.filter((p) => p.tier === tier).length) : 0;
   const nOthers = kind === "specialty" ? 0 : others.filter((o) => kind === "all" || o.cls === kind).length;
   const showTiers = kind === "specialty";
+
+  if (embed)
+    return (
+      <div
+        ref={box}
+        className="h-dvh w-full bg-muted"
+        role="region"
+        aria-label="Interactive map of independent cafés in Metro Manila"
+      />
+    );
 
   return (
     <div className="grid gap-3">

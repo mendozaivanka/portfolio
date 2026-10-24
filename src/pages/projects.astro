@@ -2,7 +2,10 @@
 import Layout from "@/layouts/Layout.astro";
 import ProjectGrid from "@/components/ProjectGrid";
 import { site } from "@/data/site";
-import { kinds, projects } from "@/data/projects";
+import { kinds } from "@/data/projects";
+import { getProjects } from "@/lib/data";
+
+const projects = await getProjects();
 
 const years = projects.map((p) => p.year);
 const range = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : "";

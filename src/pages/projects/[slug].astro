@@ -1,0 +1,151 @@
+---
+/** One page per project that has a `caseStudy`: the problem, the architecture, the solution and how it was measured. */
+import type { GetStaticPaths } from "astro";
+import { ArrowLeftIcon, ArrowRightIcon, BriefcaseBusinessIcon } from "lucide-react";
+import Layout from "@/layouts/Layout.astro";
+import ArchitectureDiagram from "@/components/ArchitectureDiagram.astro";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { site } from "@/data/site";
+import { getProjects } from "@/lib/data";
+
+export const getStaticPaths = (async () => {
+  const withStudies = (await getProjects()).filter((p) => p.caseStudy);
+  return withStudies.map((project, i) => ({
+    params: { slug: project.caseStudy!.slug },
+    props: { project, next: withStudies[(i + 1) % withStudies.length] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { project, next } = Astro.props;
+const cs = project.caseStudy!;
+const sections = [
+  { id: "problem", label: "The problem" },
+  { id: "architecture", label: "The architecture" },
+  { id: "solution", label: "The solution" },
+  { id: "evals", label: "Evals" },
+];
+---
+
+<Layout title={`${project.title} · case study — ${site.name}`} description={cs.tagline}>
+  <article class="grid max-w-[880px] gap-12 pt-8 sm:pt-14">
+    <header class="reveal grid gap-4">
+      <a href="/projects/" class="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeftIcon className="size-3.5" aria-hidden="true" /> All projects
+      </a>
+      <span class="label-mono">Case study</span>
+      <h1 class="font-serif text-[clamp(2.25rem,6vw,3.25rem)] leading-[1.05] font-medium tracking-tight text-balance">
+        {project.title}
+      </h1>
+      <p class="font-serif text-xl leading-snug text-balance sm:text-[22px]">{cs.tagline}</p>
+      <dl class="grid gap-x-6 gap-y-1.5 font-mono text-[13px] sm:grid-cols-[auto_minmax(0,1fr)]">
+        {project.org && (
+          <>
+            <dt class="text-muted-foreground">Where</dt>
+            <dd class="inline-flex items-center gap-1.5">
+              <BriefcaseBusinessIcon className="size-3.5" aria-hidden="true" />{project.org} · {project.period ?? project.year}
+            </dd>
+          </>
+        )}
+        <dt class="text-muted-foreground">My part</dt>
+        <dd class="font-sans text-sm">{cs.role}</dd>
+        <dt class="text-muted-foreground">Stack</dt>
+        <dd class="flex flex-wrap gap-1.5">{project.tags.map((t) => <Badge variant="outline">{t}</Badge>)}</dd>
+      </dl>
+      {
+        project.kind === "work" && (
+          <p class="text-sm text-muted-foreground">
+            This is an internal system, so it's described at the level I can share. The results are the ones on my CV.
+          </p>
+        )
+      }
+      <nav aria-label="On this page" class="flex flex-wrap gap-1.5 pt-1">
+        {sections.map((s) => <a href={`#${s.id}`} class="rounded-full border border-border px-3 py-1 text-[13px] hover:bg-muted">{s.label}</a>)}
+      </nav>
+    </header>
+
+    <section class="reveal grid gap-4 scroll-mt-24" id="problem" aria-labelledby="h-problem">
+      <span class="label-mono">01 · The problem</span>
+      <h2 id="h-problem" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] leading-tight font-medium tracking-tight text-balance">
+        {cs.problem.headline}
+      </h2>
+      {cs.problem.body.map((para) => <p class="max-w-[68ch] text-muted-foreground">{para}</p>)}
+    </section>
+
+    <section class="reveal grid gap-4 scroll-mt-24" id="architecture" aria-labelledby="h-architecture">
+      <span class="label-mono">02 · The architecture</span>
+      <h2 id="h-architecture" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] leading-tight font-medium tracking-tight">
+        How the pieces connect
+      </h2>
+      <ArchitectureDiagram architecture={cs.architecture} />
+    </section>
+
+    <section class="reveal grid gap-4 scroll-mt-24" id="solution" aria-labelledby="h-solution">
+      <span class="label-mono">03 · The solution</span>
+      <h2 id="h-solution" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] leading-tight font-medium tracking-tight">
+        What I built
+      </h2>
+      <ul class="grid max-w-[68ch] list-none gap-3 p-0">
+        {
+          cs.solution.map((s) => (
+            <li class="grid grid-cols-[18px_minmax(0,1fr)] gap-2">
+              <span class="text-primary-strong" aria-hidden="true">✦</span>
+              <span>{s}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="reveal grid gap-4 scroll-mt-24" id="evals" aria-labelledby="h-evals">
+      <span class="label-mono">04 · Evals, or it didn't happen</span>
+      <h2 id="h-evals" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] leading-tight font-medium tracking-tight">
+        How I measured it
+      </h2>
+      <div class="grid gap-4 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <ol class="grid list-none content-start gap-3 p-0">
+          {
+            cs.evals.method.map((m, i) => (
+              <li class="grid grid-cols-[28px_minmax(0,1fr)] gap-2">
+                <span class="font-mono text-sm text-muted-foreground tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                <span>{m}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <ul class="grid list-none content-start gap-3 p-0">
+          {
+            cs.evals.metrics.map((m) => (
+              <li>
+                <Card className="gap-1 bg-mangga/30 px-4 py-4">
+                  <span class="font-serif text-4xl leading-none tabular-nums">{m.value}</span>
+                  <span class="font-medium">{m.label}</span>
+                  <span class="text-xs text-muted-foreground">{m.note}</span>
+                </Card>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      {
+        cs.evals.caveat && (
+          <p class="max-w-[68ch] border-l-2 border-gold pl-3 text-sm text-muted-foreground">
+            <b class="font-medium text-foreground">What the number doesn't show:</b> {cs.evals.caveat}
+          </p>
+        )
+      }
+    </section>
+
+    <footer class="reveal flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
+      <a href="/projects/" class={buttonVariants({ variant: "outline" })}><ArrowLeftIcon /> All projects</a>
+      {
+        next.caseStudy!.slug !== cs.slug && (
+          <a href={`/projects/${next.caseStudy!.slug}/`} class={buttonVariants({ variant: "secondary" })}>
+            Next: {next.title} <ArrowRightIcon />
+          </a>
+        )
+      }
+    </footer>
+  </article>
+</Layout>

@@ -1,10 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import ThemeMenu from "@/components/ThemeMenu";
-import meta from "@/data/timpla/meta.json";
+import { getTimplaMeta } from "@/lib/data";
 
 type Props = { title: string; description?: string; current?: "home" | "map" | "cafes" | "data" };
 const { title, description, current } = Astro.props;
+const meta = await getTimplaMeta();
 
 const links = [
   { id: "home", label: "Overview", href: "/timpla/" },

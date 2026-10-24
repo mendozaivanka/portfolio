@@ -2,9 +2,11 @@
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
 import DotMap from "@/components/timpla/DotMap.astro";
 import Receipt from "@/components/timpla/Receipt.astro";
-import { instagramUrl, shops, shortBeans, TIER_TEXT, whereOf, type Shop } from "@/lib/timpla";
+import { getShops } from "@/lib/data";
+import { instagramUrl, shortBeans, TIER_TEXT, whereOf, type Shop } from "@/lib/timpla";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const shops = await getShops();
   return shops.map((shop, i) => ({ params: { slug: shop.slug }, props: { shop, no: i + 1 } }));
 }
 const { shop, no } = Astro.props as { shop: Shop; no: number };

@@ -8,9 +8,16 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     pullRequestPreviewsEnabled: false
+    # Settings the build reads (all optional; see .env.example). Applied when the service is synced from
+    # this Blueprint; otherwise set them under the service's Environment tab. Secrets (DATA_API_TOKEN)
+    # go in the dashboard only, never in this file.
     envVars:
       - key: NODE_VERSION
         value: "24"
+      - key: SITE_URL
+        value: https://portfolio-d79q.onrender.com
+      - key: DATA_SOURCE
+        value: local
     routes:
       # Astro builds /projects/index.html; send slash-less URLs to the canonical form
       - type: redirect
@@ -32,4 +39,4 @@ services:
         value: strict-origin-when-cross-origin
       - path: /*
         name: X-Frame-Options
-        value: DENY
+        value: SAMEORIGIN

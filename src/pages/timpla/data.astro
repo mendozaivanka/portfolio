@@ -1,7 +1,9 @@
 ---
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
-import meta from "@/data/timpla/meta.json";
+import { getTimplaMeta } from "@/lib/data";
 import { TIER_TEXT, CLASS_TEXT } from "@/lib/timpla";
+
+const meta = await getTimplaMeta();
 
 const d = meta.directory;
 const ev = d.evidence as Record<string, number>;

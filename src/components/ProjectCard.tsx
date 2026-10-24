@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowUpRightIcon, BriefcaseBusinessIcon } from "lucide-react";
+import { ArrowRightIcon, ArrowUpRightIcon, BriefcaseBusinessIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
@@ -54,11 +54,7 @@ function Preview({ project }: { project: Project }) {
   while (lines.length < PREVIEW_LINES) lines.push("");
   return (
     <div className={cn("mx-3 shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])} aria-hidden="true">
-      <div className="flex gap-1.5 border-b border-border/70 px-2.5 py-2">
-        <i className="size-1.75 rounded-full bg-foreground/20" />
-        <i className="size-1.75 rounded-full bg-foreground/20" />
-        <i className="size-1.75 rounded-full bg-foreground/20" />
-      </div>
+      <WindowBar />
       <div className="overflow-x-auto px-3.5 pt-3 pb-3.5 font-mono text-xs leading-[1.75] whitespace-pre text-foreground">
         {lines.map((line, i) => (
           <div key={i} className="h-[1.75em]">
@@ -67,6 +63,36 @@ function Preview({ project }: { project: Project }) {
         ))}
       </div>
     </div>
+  );
+}
+
+/** Window chrome shared by the terminal preview and the media frame, so both are the same height. */
+function WindowBar() {
+  return (
+    <div className="flex gap-1.5 border-b border-border/70 px-2.5 py-2">
+      <i className="size-1.75 rounded-full bg-foreground/20" />
+      <i className="size-1.75 rounded-full bg-foreground/20" />
+      <i className="size-1.75 rounded-full bg-foreground/20" />
+    </div>
+  );
+}
+
+/** A screenshot of the project, framed like the terminal preview so the cards line up. */
+function MediaPreview({ project }: { project: Project }) {
+  const media = project.media!;
+  return (
+    <figure className={cn("mx-3 shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])}>
+      <WindowBar />
+      <img
+        className="block h-[110px] w-full object-cover object-[60%_45%]"
+        src={media.poster}
+        alt={media.alt}
+        width={media.width}
+        height={media.height}
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
   );
 }
 
@@ -124,16 +150,24 @@ export default function ProjectCard({ project, variant = "full", headingLevel = 
   const Heading = headingLevel;
   // Placeholder links ("#" or empty) are skipped rather than scrolling the page to the top
   const links = project.links.filter((l) => l.href && l.href !== "#");
+  const caseStudyHref = project.caseStudy && `/projects/${project.caseStudy.slug}/`;
+  const visual = project.media ? <MediaPreview project={project} /> : <Preview project={project} />;
 
   if (variant === "link") {
+    // Where the whole card goes: the case study, else the project's own page, else the projects list
+    const target = caseStudyHref
+      ? { href: caseStudyHref, label: "read the case study" }
+      : links[0]?.href.startsWith("/")
+        ? { href: links[0].href, label: links[0].label }
+        : { href: "/projects/", label: "see all projects" };
     return (
       <a
-        href={links[0]?.href.startsWith("/") ? links[0].href : "/projects/"}
+        href={target.href}
         className="group flex h-full rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        aria-label={links[0]?.href.startsWith("/") ? `${project.title}: ${links[0].label}` : `${project.title}: see all projects`}
+        aria-label={`${project.title}: ${target.label}`}
       >
         <Card className="h-full w-full transition-[transform,box-shadow] group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-rosas-3 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-          <Preview project={project} />
+          {visual}
           <CardHeader>
             <Meta project={project} />
             <Heading className={cn(titleClass, "flex items-start justify-between gap-3")}>
@@ -150,17 +184,24 @@ export default function ProjectCard({ project, variant = "full", headingLevel = 
 
   return (
     <Card className="h-full w-full">
-      <Preview project={project} />
+      {visual}
       <CardHeader>
         <Meta project={project} />
         <Heading className={cn(titleClass, "min-w-0 break-words")}>{project.title}</Heading>
         <CardDescription>{project.description}</CardDescription>
       </CardHeader>
       <Footer project={project} />
-      {links.length > 0 && (
-        <CardFooter className="gap-2 border-t-0 pt-0">
+      {(caseStudyHref || links.length > 0) && (
+        <CardFooter className="flex-wrap gap-2 border-t-0 pt-0">
+          {caseStudyHref && (
+            <Button asChild variant="secondary" size="sm">
+              <a href={caseStudyHref}>
+                Read the case study <ArrowRightIcon />
+              </a>
+            </Button>
+          )}
           {links.map((l, i) => (
-            <Button key={l.label} asChild variant={i === 0 ? "secondary" : "ghost"} size="sm">
+            <Button key={l.label} asChild variant={i === 0 && !caseStudyHref ? "secondary" : "ghost"} size="sm">
               <a href={l.href} {...(l.href.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})}>
                 {l.label} <ArrowUpRightIcon />
               </a>

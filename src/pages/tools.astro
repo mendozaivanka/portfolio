@@ -3,7 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { site } from "@/data/site";
-import { setup, toolGroups } from "@/data/tools";
+import { getTools } from "@/lib/data";
+
+const { setup, toolGroups } = await getTools();
 
 // Swatch → badge colours and the little dot beside each group title
 const swatch: Record<string, { badge: string; dot: string }> = {

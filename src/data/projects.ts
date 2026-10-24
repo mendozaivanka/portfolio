@@ -28,6 +28,40 @@ export type Project = {
   /** Public links. Empty for internal work. Entries with href "#" are hidden. */
   links: { label: string; href: string }[];
   featured?: boolean;
+  /** Screenshot shown on the card instead of the terminal preview. */
+  media?: Media;
+  /** A dedicated page at /projects/<slug>/ walking through the problem, architecture and evals. */
+  caseStudy?: CaseStudy;
+};
+
+export type Media = {
+  /** Screenshot shown on the card, under public/. */
+  poster: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+/** One box in the architecture diagram. */
+export type DiagramNode = { label: string; tech: string; note?: string };
+
+export type CaseStudy = {
+  slug: string;
+  /** One line under the title, e.g. the headline result. */
+  tagline: string;
+  /** What I owned on the project. */
+  role: string;
+  problem: { headline: string; body: string[] };
+  /** Left-to-right stages; each holds one or more boxes. `loop` is the feedback path drawn back to the start. */
+  architecture: { caption: string; stages: { title: string; nodes: DiagramNode[] }[]; loop?: string };
+  solution: string[];
+  evals: {
+    /** How success was measured, step by step. */
+    method: string[];
+    metrics: { value: string; label: string; note: string }[];
+    /** What the numbers don't show. */
+    caveat?: string;
+  };
 };
 
 export const categories: { id: Category | "all"; label: string }[] = [
@@ -74,6 +108,51 @@ export const projects: Project[] = [
     ],
     links: [],
     featured: true,
+    caseStudy: {
+      slug: "anomaly-detection",
+      tagline: "From a manual review queue to alerts people trust: 3.2× more real issues caught with 75% less monitoring.",
+      role: "Designed and built the detection job, the data model behind it and the Tableau reporting.",
+      problem: {
+        headline: "The team was drowning in a manual review queue.",
+        body: [
+          "Product and test data arrived every day, and checking it meant someone scrolling through charts and spreadsheets looking for anything odd. Most of what got flagged was noise, and the problems that mattered were easy to miss in the pile.",
+          "The review took hours that engineers would rather have spent fixing things, and how good it was depended on who was on duty.",
+        ],
+      },
+      architecture: {
+        caption: "Data is collected and cleaned into PostgreSQL, a Python job scores it, and only the flags worth a look reach people.",
+        stages: [
+          { title: "Collect", nodes: [{ label: "Collectors", tech: "Python · Selenium", note: "pull data from systems with no API" }] },
+          { title: "Store", nodes: [{ label: "Structured tables", tech: "PostgreSQL", note: "one clean history per series" }] },
+          { title: "Detect", nodes: [{ label: "Detection job", tech: "Python", note: "scores every series, flags outliers" }] },
+          {
+            title: "Surface",
+            nodes: [
+              { label: "Dashboards", tech: "Tableau", note: "trends and flagged points" },
+              { label: "Alerts", tech: "Python", note: "only the flags worth a look" },
+            ],
+          },
+        ],
+        loop: "Engineers confirm or dismiss each flag, and those answers are used to tune the detection thresholds.",
+      },
+      solution: [
+        "Replaced the daily eyeball check with a scheduled job that scores every series and flags only the points that look wrong.",
+        "Put the flags where the team already looks: Tableau dashboards for the trend, alerts for what needs action now.",
+        "Kept a person in the loop. Every flag gets confirmed or dismissed, so the team can see whether the detector is earning its keep.",
+      ],
+      evals: {
+        method: [
+          "Took the manual review as the baseline: what it caught, and how long it took.",
+          "Ran the detector over the same periods and counted the confirmed, real issues each approach found.",
+          "Measured time spent on monitoring before and after the switch.",
+        ],
+        metrics: [
+          { value: "3.2×", label: "more real issues caught", note: "vs. manual review over the same data" },
+          { value: "75%", label: "less manual monitoring", note: "time spent on routine checking" },
+        ],
+        caveat: "A detector that flags everything also \"catches more\". Counting only confirmed issues keeps the comparison honest.",
+      },
+    },
   },
   {
     title: "Test-Case Recommender",
@@ -96,6 +175,43 @@ export const projects: Project[] = [
     ],
     links: [],
     featured: true,
+    caseStudy: {
+      slug: "test-case-recommender",
+      tagline: "A retrieval pipeline that drafts the test plan: ~90% retrieval accuracy over the team's test library.",
+      role: "Built the ingestion, indexing and retrieval pipeline, and the eval set used to tune it.",
+      problem: {
+        headline: "Writing a test plan meant a day of searching.",
+        body: [
+          "The test library was large and spread across structured tables and semi-structured documents. For every change or new requirement, someone had to work out which existing cases applied.",
+          "That depended on memory and search, so plans were slow to write and uneven: the cases a senior engineer would know to include were easy for anyone else to miss.",
+        ],
+      },
+      architecture: {
+        caption: "Test cases live in PostgreSQL, LlamaIndex retrieves the relevant ones for a change, and a local model served by Ollama ranks them into a draft plan.",
+        stages: [
+          { title: "Ingest", nodes: [{ label: "Loaders", tech: "Python", note: "structured and semi-structured test cases" }] },
+          { title: "Store", nodes: [{ label: "Test library", tech: "PostgreSQL", note: "cases plus metadata" }] },
+          { title: "Retrieve", nodes: [{ label: "Index + retriever", tech: "LlamaIndex", note: "finds candidate cases for a change" }] },
+          { title: "Rank", nodes: [{ label: "Local LLM", tech: "Ollama", note: "orders and explains the picks" }] },
+          { title: "Deliver", nodes: [{ label: "Draft test plan", tech: "Django", note: "an engineer reviews and edits" }] },
+        ],
+        loop: "Accepted and rejected recommendations become new labelled examples for the eval set.",
+      },
+      solution: [
+        "Loaded the whole test library, tables and documents alike, into one PostgreSQL store with consistent metadata.",
+        "Indexed it with LlamaIndex so a change description or requirement retrieves the cases that cover it.",
+        "Turned test-plan writing into a review: the pipeline drafts the list and an engineer checks it.",
+      ],
+      evals: {
+        method: [
+          "Built an eval set from past changes paired with the test cases engineers actually used for them.",
+          "Ran each change through the pipeline and checked whether the right cases came back.",
+          "Re-ran the full set after every change to chunking, metadata or prompts, and kept only the changes that improved it.",
+        ],
+        metrics: [{ value: "~90%", label: "retrieval accuracy", note: "on the labelled set of past changes" }],
+        caveat: "The eval set comes from plans people already wrote, so it measures agreement with past practice, not whether those plans were complete.",
+      },
+    },
   },
   {
     title: "Root-Cause Analysis Model",
@@ -118,6 +234,48 @@ export const projects: Project[] = [
     ],
     links: [],
     featured: true,
+    caseStudy: {
+      slug: "root-cause-analysis",
+      tagline: "A fine-tuned local model that reads failures and proposes a root cause: ~93% F1, and the data stays on-prem.",
+      role: "Prepared the training and eval data, fine-tuned the models, iterated on prompts and served them locally.",
+      problem: {
+        headline: "Every failure needed someone to read the logs.",
+        body: [
+          "When a test failed, an engineer had to dig through logs and output to work out why. Many failures had the same handful of causes, but each one still took a person's time.",
+          "The data was sensitive, so sending it to a hosted model wasn't an option.",
+        ],
+      },
+      architecture: {
+        caption: "Failure logs go into PostgreSQL, a model fine-tuned with Unsloth runs locally on Ollama, and its answer lands in the team's Django app.",
+        stages: [
+          { title: "Collect", nodes: [{ label: "Logs + test output", tech: "Python", note: "parsed into clean records" }] },
+          { title: "Store", nodes: [{ label: "Failure history", tech: "PostgreSQL", note: "labelled past failures" }] },
+          {
+            title: "Model",
+            nodes: [
+              { label: "Fine-tune", tech: "Unsloth", note: "trained on labelled failures" },
+              { label: "Serve", tech: "Ollama", note: "runs on local hardware" },
+            ],
+          },
+          { title: "Deliver", nodes: [{ label: "Root cause + class", tech: "Django", note: "attached to the failure" }] },
+        ],
+        loop: "Wrong answers corrected by engineers go back into the training and eval data.",
+      },
+      solution: [
+        "Fine-tuned small open models with Unsloth on labelled past failures, and served them with Ollama so nothing leaves the building.",
+        "Combined fine-tuning with prompt work: a structured prompt that asks for the failure class first, then the likely cause.",
+        "Surfaced the answer inside the Django app engineers already use, as a suggestion they can accept or correct.",
+      ],
+      evals: {
+        method: [
+          "Held back a set of labelled failures that the model never saw in training.",
+          "Scored every model and prompt version on that set with precision, recall and F1.",
+          "Promoted a version only if it beat the current one on F1 without a drop on any important class.",
+        ],
+        metrics: [{ value: "~93%", label: "F1 score", note: "on held-out labelled failures" }],
+        caveat: "F1 on known failure types says little about brand-new ones, so a confident answer on something unfamiliar still goes to a person.",
+      },
+    },
   },
   {
     title: "Multi-Agent QA for Enterprise AI",
@@ -178,6 +336,7 @@ export const projects: Project[] = [
       "  workflow: auto-assign → notify",
     ],
     links: [],
+    featured: true,
   },
   {
     title: "GPU/NPU Performance Monitoring",
@@ -225,18 +384,24 @@ export const projects: Project[] = [
     kind: "personal",
     categories: ["data", "automation"],
     description:
-      "A sourced map of Metro Manila's specialty coffee scene: 109 cafés and 174 branches, who roasts for whom, where the beans grow and when each place opened. Built from free, open data with an automated research pipeline; no star ratings, just receipts.",
-    summary: "A sourced map of Metro Manila's specialty coffee: 109 cafés, where the beans grow, and who roasts for whom.",
-    results: ["109 cafés", "174 branches"],
+      "A sourced map of Metro Manila's independent cafés: 329 of them, 108 specialty, with who roasts for whom, where the beans grow and when each place opened. Built from free, open data with an automated research pipeline; no star ratings, just receipts.",
+    summary: "A sourced map of Metro Manila's independent cafés: 329 of them, 108 specialty, and who roasts for whom.",
+    results: ["329 cafés", "108 specialty"],
     tags: ["Data viz", "MapLibre", "Python", "Astro"],
     tint: "rosas",
     preview: [
       "**timpla** · built 2026-10-21",
-      "  shops ==109== · branches 174",
+      "  shops ==108== · branches 173",
       "  Benguet on menus 29% · harvest 12%",
       "  Sultan Kudarat menus 5% · harvest ==52%==",
     ],
     links: [{ label: "Open Timpla", href: "/timpla/" }],
     featured: true,
+    media: {
+      poster: "/projects/timpla/timpla-map-poster.jpg",
+      alt: "The Timpla map of Metro Manila: café dots across Makati and Pasig, with a details card for Toby's Estate in Ortigas.",
+      width: 800,
+      height: 430,
+    },
   },
 ];

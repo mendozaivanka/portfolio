@@ -1,6 +1,8 @@
 ---
 // Specialty café openings per year (all tracked openings in the scene), 2012–2026.
-import timeline from "@/data/timpla/timeline.json";
+import { getTimeline } from "@/lib/data";
+
+const timeline = await getTimeline();
 
 const years = timeline.years;
 const max = Math.max(...years.map((y) => y.opened));

@@ -1,5 +1,3 @@
-import shopsJson from "@/data/timpla/shops.json";
-import directoryJson from "@/data/timpla/directory.json";
 import type { BranchRow } from "@/components/timpla/BranchList";
 
 export type Branch = {
@@ -12,7 +10,7 @@ export type Shop = {
   signals: string[]; specialty: string; status: string; website: string; instagram: string; branches: Branch[];
 };
 
-export const shops = shopsJson as Shop[];
+// Data comes from the data layer (getShops / getIndependents in @/lib/data); this file only holds helpers.
 
 export const instagramUrl = (h: string) => {
   const handle = h.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*/, "").trim();
@@ -40,7 +38,6 @@ export type Independent = {
   id: string; name: string; cls: "independent" | "multibranch"; city: string; lon: number; lat: number;
   n: number; ev: "osm_check" | "overture_2026_09"; evd: string; ig: string; web: string;
 };
-export const independents = directoryJson as Independent[];
 
 export const CLASS_TEXT = {
   specialty: "Roasts, names its roaster or origin, or brews by method; checked open in 2025–26",
@@ -66,7 +63,7 @@ export const outLink = (c: Pick<Independent, "id" | "ig" | "web">) => {
 };
 
 /** One row per branch, best tier first, then most written-about. */
-export const branchRows: BranchRow[] = shops.flatMap((s) =>
+export const toBranchRows = (shops: Shop[]): BranchRow[] => shops.flatMap((s) =>
   s.branches.map((b) => ({
     cls: "specialty" as const,
     href: `/timpla/cafes/${s.slug}/`,
@@ -82,8 +79,8 @@ export const branchRows: BranchRow[] = shops.flatMap((s) =>
 );
 
 /** The whole directory: specialty branches first (as above), then everyone else by city and name. */
-export const directoryRows: BranchRow[] = [
-  ...branchRows,
+export const toDirectoryRows = (shops: Shop[], independents: Independent[]): BranchRow[] => [
+  ...toBranchRows(shops),
   ...[...independents]
     .sort((a, b) => a.city.localeCompare(b.city) || a.name.localeCompare(b.name))
     .map((c) => {

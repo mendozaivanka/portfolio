@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cv, cvAsPrompt, formatDate, formatDuration, type CV } from "@/data/cv";
+import { cvAsPrompt, formatDate, formatDuration, type CV } from "@/data/cv";
 import { copyText } from "@/lib/toast";
 import StarMark from "./StarMark";
 
@@ -84,9 +84,9 @@ function CodeBlock({ text, label }: { text: string; label: string }) {
 
 /* ───────── The page island ───────── */
 
-export default function CvView() {
-  const json = useMemo(() => JSON.stringify(cv, null, 2), []);
-  const prompt = useMemo(() => cvAsPrompt(cv), []);
+export default function CvView({ cv }: { cv: CV }) {
+  const json = useMemo(() => JSON.stringify(cv, null, 2), [cv]);
+  const prompt = useMemo(() => cvAsPrompt(cv), [cv]);
 
   return (
     <Tabs defaultValue="timeline" className="gap-6">

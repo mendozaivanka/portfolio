@@ -1,10 +1,10 @@
 ---
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
 import CafeMap from "@/components/timpla/CafeMap";
-import points from "@/data/timpla/points.json";
-import unverified from "@/data/timpla/osm_layer.json";
-import meta from "@/data/timpla/meta.json";
-import { independents, evidenceText, outLink } from "@/lib/timpla";
+import { getIndependents, getOsmLayer, getPoints, getTimplaMeta } from "@/lib/data";
+import { evidenceText, outLink } from "@/lib/timpla";
+
+const [points, unverified, meta, independents] = await Promise.all([getPoints(), getOsmLayer(), getTimplaMeta(), getIndependents()]);
 
 const mapPoints = points.map(({ slug, name, branch, tier, city, nb, lon, lat, beans, since }) => ({ slug, name, branch, tier, city, nb, lon, lat, beans, since }));
 // Only what the card needs, so the page stays light

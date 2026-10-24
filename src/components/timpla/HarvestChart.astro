@@ -1,7 +1,8 @@
 ---
 // Dumbbell: share of Manila roasters' Philippine bean listings vs share of the national Arabica harvest.
-import provenance from "@/data/timpla/provenance.json";
-import meta from "@/data/timpla/meta.json";
+import { getProvenance, getTimplaMeta } from "@/lib/data";
+
+const [provenance, meta] = await Promise.all([getProvenance(), getTimplaMeta()]);
 
 const MAX = 60; // % axis max
 const pos = (v: number) => `${(v / MAX) * 100}%`;

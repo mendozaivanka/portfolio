@@ -1,0 +1,56 @@
+---
+/**
+ * A left-to-right flowchart built from plain HTML, so it reflows to top-to-bottom on phones, scales with text size
+ * and reads as an ordered list to screen readers. Stages come from a project's `caseStudy.architecture`.
+ */
+import { ArrowDownIcon, ArrowRightIcon, CornerDownLeftIcon } from "lucide-react";
+import type { CaseStudy } from "@/data/projects";
+
+type Props = { architecture: CaseStudy["architecture"] };
+const { architecture } = Astro.props;
+const { stages, loop, caption } = architecture;
+---
+
+<figure class="grid gap-3 rounded-xl border border-border bg-card p-4 sm:p-5">
+  <ol class="flex list-none flex-col items-stretch gap-1 p-0 md:flex-row md:items-stretch md:gap-0" aria-label="Pipeline stages, in order">
+    {
+      stages.map((stage, i) => (
+        <>
+          <li class="flex min-w-0 flex-1 flex-col gap-2">
+            <span class="label-mono">
+              <span class="tabular-nums text-muted-foreground">{String(i + 1).padStart(2, "0")}</span> {stage.title}
+            </span>
+            <ul class="grid flex-1 list-none content-start gap-2 p-0">
+              {stage.nodes.map((n) => (
+                <li class="grid gap-1 rounded-lg border border-border bg-background px-3 py-2.5 shadow-xs">
+                  <span class="text-sm leading-tight font-medium">{n.label}</span>
+                  <span class="w-fit rounded-sm bg-rosas-2/50 px-1.5 py-0.5 font-mono text-[11px] leading-none text-foreground">
+                    {n.tech}
+                  </span>
+                  {n.note && <span class="text-xs leading-snug text-muted-foreground">{n.note}</span>}
+                </li>
+              ))}
+            </ul>
+          </li>
+          {i < stages.length - 1 && (
+            <li class="flex shrink-0 items-center justify-center text-primary-strong md:w-7 md:pt-6" aria-hidden="true">
+              <ArrowDownIcon className="size-4 md:hidden" />
+              <ArrowRightIcon className="hidden size-4 md:block" />
+            </li>
+          )}
+        </>
+      ))
+    }
+  </ol>
+  {
+    loop && (
+      <p class="flex items-start gap-2 rounded-lg border border-dashed border-primary-strong/40 px-3 py-2 text-sm">
+        <CornerDownLeftIcon className="mt-0.5 size-4 shrink-0 text-primary-strong" aria-hidden="true" />
+        <span>
+          <b class="font-medium">Feedback loop:</b> {loop}
+        </span>
+      </p>
+    )
+  }
+  <figcaption class="text-sm text-muted-foreground">{caption}</figcaption>
+</figure>

@@ -1,12 +1,13 @@
 ---
 // Static map of Metro Manila: simplified city outlines, one dot per mapped branch, and café names beside the
 // dots wherever they fit, all rendered at build time. Hovering a dot shows its details (SVG <title>).
-import ncr from "@/data/timpla/ncr.json";
-import points from "@/data/timpla/points.json";
+import { getNcr, getPoints } from "@/lib/data";
+import type { Point } from "@/lib/data/schemas";
 
 type Props = { highlight?: string; class?: string; label?: string };
 const { highlight, class: cls = "", label } = Astro.props;
-type P = (typeof points)[number];
+const [ncr, points] = await Promise.all([getNcr(), getPoints()]);
+type P = Point;
 
 const shown = highlight ? points.filter((p) => p.slug === highlight) : points;
 const others = highlight ? points.filter((p) => p.slug !== highlight) : [];

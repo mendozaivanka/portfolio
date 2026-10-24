@@ -6,17 +6,21 @@ import Clock from "@/components/Clock";
 import CopyEmailButton from "@/components/CopyEmailButton";
 import ProjectCard from "@/components/ProjectCard";
 import PromptGardenCard from "@/components/PromptGardenCard";
+import TimplaShowcase from "@/components/TimplaShowcase.astro";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import me from "@/assets/me.jpeg";
-import { cv, formatDate } from "@/data/cv";
+import { formatDate } from "@/data/cv";
 import { passRates, prompts, site, socials } from "@/data/site";
-import { projects } from "@/data/projects";
-import { toolboxHighlights } from "@/data/tools";
+import { getCv, getProjects, getTools } from "@/lib/data";
 
-const featured = projects.filter((p) => p.featured);
+const [cv, projects, { toolboxHighlights }] = await Promise.all([getCv(), getProjects(), getTools()]);
+
+// Timpla gets its own section with the live map, so it isn't repeated in the work grid
+const timpla = projects.find((p) => p.links.some((l) => l.href === "/timpla/"));
+const featured = projects.filter((p) => p.featured && p !== timpla);
 const currentRole = cv.experience.find((r) => r.end === null) ?? cv.experience[0];
 
 const gists = [
@@ -91,6 +95,13 @@ const swatchClass: Record<string, string> = {
         <div class="flex flex-wrap gap-2">
           <Button asChild size="lg"><a href="/projects/">See my work</a></Button>
           <Button asChild size="lg" variant="outline"><a href="#contact">Get in touch</a></Button>
+          {
+            cv.profile.pdf && (
+              <Button asChild size="lg" variant="ghost">
+                <a href={cv.profile.pdf} download>Résumé (PDF)</a>
+              </Button>
+            )
+          }
         </div>
       </div>
 
@@ -193,6 +204,8 @@ const swatchClass: Record<string, string> = {
     </ul>
   </section>
 
+  {timpla && <TimplaShowcase project={timpla} />}
+
   <!-- ───────── Toolbox ───────── -->
   <section class="reveal pt-10 sm:pt-14" id="skills">
     <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
@@ -218,7 +231,10 @@ const swatchClass: Record<string, string> = {
         <span class="label-mono">Curriculum vitae</span>
         <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Where I've been</h2>
       </div>
-      <Button asChild variant="outline" size="sm"><a href="/cv/">Full CV <span aria-hidden="true">→</span></a></Button>
+      <div class="flex flex-wrap gap-2">
+        {cv.profile.pdf && <Button asChild variant="secondary" size="sm"><a href={cv.profile.pdf} download>Download PDF</a></Button>}
+        <Button asChild variant="outline" size="sm"><a href="/cv/">Full CV <span aria-hidden="true">→</span></a></Button>
+      </div>
     </div>
     <Card className="gap-0 py-0 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <div class="grid content-start gap-3 border-b border-border p-5 md:border-r md:border-b-0 md:p-6">

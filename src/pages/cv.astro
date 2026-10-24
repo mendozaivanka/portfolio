@@ -3,8 +3,10 @@ import Layout from "@/layouts/Layout.astro";
 import CvView from "@/components/CvView";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cv } from "@/data/cv";
 import { site } from "@/data/site";
+import { getCv } from "@/lib/data";
+
+const cv = await getCv();
 
 const { profile, impact } = cv;
 const current = cv.experience.find((r) => r.end === null);
@@ -56,7 +58,7 @@ const current = cv.experience.find((r) => r.end === null);
 
   <!-- ───────── The CV, three ways ───────── -->
   <section class="reveal pt-10 sm:pt-14">
-    <CvView client:load />
+    <CvView client:load cv={cv} />
   </section>
 
   <section class="reveal pt-12 print:hidden">

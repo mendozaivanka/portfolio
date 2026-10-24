@@ -15,8 +15,29 @@ export type Role = {
 };
 
 export type Impact = { value: string; label: string; note: string };
+export type Education = { school: string; degree: string; honours: string; location: string; start: string; end: string };
 
-export const cv = {
+export type CV = {
+  profile: {
+    fullName: string;
+    title: string;
+    location: string;
+    email: string;
+    /** null hides it on the public site */
+    phone: string | null;
+    summary: string;
+    /** Path under public/, or null to hide the download button. */
+    pdf: string | null;
+  };
+  impact: Impact[];
+  experience: Role[];
+  education: Education[];
+  skills: { group: string; items: string[] }[];
+  certifications: { name: string; issuer: string }[];
+  languages: { name: string; level: string }[];
+};
+
+export const cv: CV = {
   profile: {
     fullName: "Ivanka Chaental Louise Mendoza",
     title: "AI & Automation Engineer",
@@ -117,7 +138,6 @@ export const cv = {
   ],
 };
 
-export type CV = typeof cv;
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -140,7 +160,7 @@ export function formatDuration(start: string, end: string): string {
 }
 
 /** The CV as a system prompt: the same facts, written for a model. */
-export function cvAsPrompt(data: CV = cv): string {
+export function cvAsPrompt(data: CV): string {
   const p = data.profile;
   const lines: string[] = [
     `You are a helpful assistant that answers questions about ${p.fullName}, an ${p.title} based in ${p.location}.`,

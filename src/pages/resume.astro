@@ -1,0 +1,142 @@
+---
+/**
+ * The résumé as a print-ready page, built from the same CV data as /cv/. `npm run resume:pdf` prints this page to
+ * public/<name>.pdf, so the downloadable PDF never drifts from the site. Always light, A4, no site chrome.
+ */
+import "@/styles/global.css";
+import { formatDate } from "@/data/cv";
+import { socials } from "@/data/site";
+import { getCv, getProjects } from "@/lib/data";
+
+const [cv, projects] = await Promise.all([getCv(), getProjects()]);
+const p = cv.profile;
+const siteUrl = (Astro.site ?? Astro.url).origin;
+const studies = projects.filter((x) => x.caseStudy);
+const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const contact = [
+  { label: p.email, href: `mailto:${p.email}` },
+  { label: host(siteUrl), href: siteUrl },
+  ...socials.map((s) => ({ label: host(s.href), href: s.href })),
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{p.fullName} — Résumé</title>
+    <meta name="description" content={`Résumé of ${p.fullName}, ${p.title}.`} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={new URL("/cv/", siteUrl)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      @page { size: A4; margin: 14mm 15mm; }
+      .sheet { max-width: 180mm; margin: 0 auto; padding: 14mm 0; }
+      @media print { .sheet { padding: 0; } .screen-only { display: none; } }
+      h2 { break-after: avoid; }
+      .role, .proj { break-inside: avoid; }
+    </style>
+  </head>
+  <body class="bg-background text-[10pt] leading-[1.45] text-foreground print:bg-white">
+    <main class="sheet px-4">
+      <p class="screen-only mb-6 text-sm text-muted-foreground">
+        Printable résumé. <a class="text-primary-strong underline" href={p.pdf ?? "/cv/"}>Download the PDF</a> ·
+        <a class="text-primary-strong underline" href="/cv/">Back to the CV</a>
+      </p>
+
+      <header class="grid gap-1.5 border-b-2 border-primary pb-3">
+        <h1 class="font-serif text-[24pt] leading-none font-medium tracking-tight">{p.fullName}</h1>
+        <p class="font-serif text-[13pt] text-primary-strong">{p.title} · {p.location}</p>
+        <p class="flex flex-wrap gap-x-3 font-mono text-[8.5pt] text-muted-foreground">
+          {contact.map((c) => <a href={c.href}>{c.label}</a>)}
+        </p>
+      </header>
+
+      <p class="mt-3">{p.summary}</p>
+
+      <ul class="mt-3 grid list-none grid-cols-4 gap-2 p-0">
+        {
+          cv.impact.map((m) => (
+            <li class="rounded-md bg-rosas-1 px-2.5 py-1.5">
+              <b class="font-serif text-[15pt] leading-none font-medium">{m.value}</b>
+              <span class="block text-[8pt] leading-tight">{m.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2 class="mt-4 mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">Experience</h2>
+      {
+        cv.experience.map((r) => (
+          <section class="role mb-2.5">
+            <div class="flex items-baseline justify-between gap-4">
+              <h3 class="font-serif text-[12pt] font-medium">{r.title}</h3>
+              <span class="shrink-0 font-mono text-[8.5pt] text-muted-foreground">
+                {formatDate(r.start)} – {formatDate(r.end)}
+              </span>
+            </div>
+            <p class="text-[9pt] text-muted-foreground">{r.company} · {r.location}</p>
+            <ul class="mt-1 grid list-none gap-0.5 p-0">
+              {r.bullets.map((b) => (
+                <li class="grid grid-cols-[14px_minmax(0,1fr)]">
+                  <span class="text-primary-strong">✦</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+
+      {
+        studies.length > 0 && (
+          <>
+            <h2 class="mt-3 mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">
+              Case studies · {host(siteUrl)}/projects
+            </h2>
+            <ul class="grid list-none gap-1 p-0">
+              {studies.map((s) => (
+                <li class="proj">
+                  <a href={new URL(`/projects/${s.caseStudy!.slug}/`, siteUrl).href} class="font-medium">{s.title}</a>
+                  <span class="text-muted-foreground"> · {s.caseStudy!.tagline}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+
+      <div class="mt-3 grid grid-cols-2 gap-6">
+        <section>
+          <h2 class="mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">Education</h2>
+          {
+            cv.education.map((e) => (
+              <div>
+                <b class="font-medium">{e.degree}</b>, {e.honours}
+                <div class="text-[9pt] text-muted-foreground">{e.school} · {e.location} · {e.start}–{e.end}</div>
+              </div>
+            ))
+          }
+          <h2 class="mt-3 mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">Certifications</h2>
+          <ul class="list-none p-0">
+            {cv.certifications.map((c) => <li>{c.name} <span class="text-muted-foreground">· {c.issuer}</span></li>)}
+          </ul>
+        </section>
+        <section>
+          <h2 class="mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">Skills</h2>
+          <dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-0.5">
+            {cv.skills.map((s) => (
+              <>
+                <dt class="text-muted-foreground">{s.group}</dt>
+                <dd>{s.items.join(", ")}</dd>
+              </>
+            ))}
+          </dl>
+          <h2 class="mt-3 mb-1.5 font-mono text-[8.5pt] tracking-[0.12em] text-primary-strong uppercase">Languages</h2>
+          <p>{cv.languages.map((l) => `${l.name} (${l.level})`).join(" · ")}</p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

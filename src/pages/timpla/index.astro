@@ -5,8 +5,11 @@ import HarvestChart from "@/components/timpla/HarvestChart.astro";
 import OpeningsChart from "@/components/timpla/OpeningsChart.astro";
 import Receipt from "@/components/timpla/Receipt.astro";
 import BranchList from "@/components/timpla/BranchList";
-import meta from "@/data/timpla/meta.json";
-import { branchRows, shops, shortBeans, whereOf } from "@/lib/timpla";
+import { getShops, getTimplaMeta } from "@/lib/data";
+import { toBranchRows, shortBeans, whereOf } from "@/lib/timpla";
+
+const [shops, meta] = await Promise.all([getShops(), getTimplaMeta()]);
+const branchRows = toBranchRows(shops);
 
 const featured = ["yardstick-coffee", "spotted-pig-cafe", "kubo-coffee"]
   .map((s) => ({ shop: shops.find((x) => x.slug === s), no: shops.findIndex((x) => x.slug === s) + 1 }))

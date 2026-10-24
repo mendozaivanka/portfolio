@@ -16,7 +16,7 @@ export type Social = { name: string; href: string; note: string };
 
 export const socials: Social[] = [
   { name: "GitHub", href: "https://github.com/mendozaivanka", note: "workflows, prompts & experiments" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/", note: "the professional version" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/mendozaivanka/", note: "the professional version" },
   // { name: "X / Twitter", href: "https://x.com/", note: "half-baked AI thoughts" },
   // { name: "Upwork", href: "https://www.upwork.com/", note: "hire me for a project" },
   // { name: "Contra", href: "https://contra.com/", note: "freelance profile" },

@@ -1,8 +1,11 @@
 ---
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
 import BranchList from "@/components/timpla/BranchList";
-import meta from "@/data/timpla/meta.json";
-import { directoryRows, CLASS_TEXT } from "@/lib/timpla";
+import { getIndependents, getShops, getTimplaMeta } from "@/lib/data";
+import { toDirectoryRows, CLASS_TEXT } from "@/lib/timpla";
+
+const [shops, independents, meta] = await Promise.all([getShops(), getIndependents(), getTimplaMeta()]);
+const directoryRows = toDirectoryRows(shops, independents);
 
 const d = meta.directory;
 const classes = [
