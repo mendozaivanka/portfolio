@@ -129,7 +129,9 @@ const national = {
 };
 
 // ───────── Imports: origin × form per year, plus a Sankey layout ─────────
-const FORMS = ["green", "roasted", "extracts", "preparations", "other"] as const;
+// 3-in-1 preparations (HS 2101.12) are left out: they are mostly sugar and creamer, not coffee beans
+const FORMS = ["green", "roasted", "extracts", "other"] as const;
+const KEEP = new Set<string>(FORMS);
 type Flow = { origin: string; name: string; form: string; kg: number; usd: number };
 const SHORT: Record<string, string> = { "Republic Of Korea": "South Korea", "People's Republic Of China": "China", "Socialist Republic Of Vietnam": "Vietnam", "United States Of America": "United States", "Lao People's Democratic Republic": "Laos", "Hong Kong Sar": "Hong Kong", "Taiwan, Province Of China": "Taiwan", "United Kingdom Of Great Britain And Northern Ireland": "United Kingdom" };
 const shortName = (n: string) => SHORT[n] ?? n.replace(/^(Republic Of|Kingdom Of|State Of|People's Republic Of|Federal Republic Of|Commonwealth Of) /i, "").replace(/ \(.*\)$/, "");
@@ -137,6 +139,7 @@ const importsOut: Record<string, { flows: Flow[]; byForm: Record<string, { kg: n
 for (const [year, cells] of Object.entries(importsRaw)) {
   const acc = new Map<string, Flow>();
   for (const c of cells) {
+    if (!KEEP.has(c.form)) continue;
     const key = `${c.country}|${c.form}`;
     const f = acc.get(key) ?? { origin: c.country, name: shortName(c.countryName), form: c.form, kg: 0, usd: 0 };
     f[c.measure] += c.value; acc.set(key, f);

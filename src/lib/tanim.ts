@@ -18,7 +18,7 @@ export const MEASURES: { id: Measure; label: string; unit: string; short: string
   { id: "farmgate", label: "farmgate ₱/kg", unit: "pesos per kilo, farmgate, yearly average", short: "₱/kg" },
   { id: "cpi", label: "coffee CPI", unit: "coffee CPI, 2018 = 100", short: "" },
 ];
-export const FORMS: Record<string, string> = { green: "Green beans", roasted: "Roasted", extracts: "Extracts", preparations: "3-in-1 preparations", other: "Other" };
+export const FORMS: Record<string, string> = { green: "Green beans", roasted: "Roasted", extracts: "Extracts (for instant)", other: "Other" };
 
 /** Fixed class breaks for tonnes, hectares and trees (the same in every year, map, legend and table). */
 export const BINS: Record<string, number[]> = {
