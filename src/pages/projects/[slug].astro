@@ -1,4 +1,5 @@
 ---
+import { cn } from "@/lib/utils";
 /** One page per project that has a `caseStudy`: the problem, the architecture, the solution and how it was measured. */
 import type { GetStaticPaths } from "astro";
 import { ArrowLeftIcon, ArrowRightIcon, BriefcaseBusinessIcon } from "lucide-react";
@@ -138,10 +139,10 @@ const sections = [
     </section>
 
     <footer class="reveal flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
-      <a href="/projects/" class={buttonVariants({ variant: "outline" })}><ArrowLeftIcon /> All projects</a>
+      <a href="/projects/" class={cn(buttonVariants({ variant: "outline" }))}><ArrowLeftIcon /> All projects</a>
       {
         next.caseStudy!.slug !== cs.slug && (
-          <a href={`/projects/${next.caseStudy!.slug}/`} class={buttonVariants({ variant: "secondary" })}>
+          <a href={`/projects/${next.caseStudy!.slug}/`} class={cn(buttonVariants({ variant: "secondary" }))}>
             Next: {next.title} <ArrowRightIcon />
           </a>
         )

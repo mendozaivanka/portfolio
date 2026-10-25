@@ -1,4 +1,5 @@
 ---
+import { cn } from "@/lib/utils";
 import { Image } from "astro:assets";
 import { BarChart3Icon, PenLineIcon, WorkflowIcon } from "lucide-react";
 import Layout from "@/layouts/Layout.astro";
@@ -8,7 +9,7 @@ import ProjectCard from "@/components/ProjectCard";
 import PromptGardenCard from "@/components/PromptGardenCard";
 import TimplaShowcase from "@/components/TimplaShowcase.astro";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import me from "@/assets/me.jpeg";
@@ -93,13 +94,11 @@ const swatchClass: Record<string, string> = {
           }
         </ul>
         <div class="flex flex-wrap gap-2">
-          <Button asChild size="lg" variant="outline"><a href="/projects/">See my work</a></Button>
-          <Button asChild size="lg" variant="outline"><a href="#contact">Get in touch</a></Button>
+          <a href="/projects/" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>See my work</a>
+          <a href="#contact" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>Get in touch</a>
           {
             cv.profile.pdf && (
-              <Button asChild size="lg" variant="outline">
-                <a href={cv.profile.pdf} download>CV</a>
-              </Button>
+              <a href={cv.profile.pdf} download class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>CV</a>
             )
           }
         </div>
@@ -188,7 +187,7 @@ const swatchClass: Record<string, string> = {
         <span class="label-mono">Selected work · built on the job</span>
         <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Things I've built</h2>
       </div>
-      <Button asChild variant="outline" size="sm"><a href="/projects/">All projects <span aria-hidden="true">→</span></a></Button>
+      <a href="/projects/" class={cn(buttonVariants({ variant: "outline", size: "sm" }))}>All projects <span aria-hidden="true">→</span></a>
     </div>
     <!-- Six cards: 2×3 on tablets, 3×2 on desktop. auto-rows-fr makes every row the height of the tallest card -->
     <ul class="grid list-none auto-rows-fr gap-4 p-0 md:grid-cols-2 lg:grid-cols-3">
@@ -213,7 +212,7 @@ const swatchClass: Record<string, string> = {
         <span class="label-mono">Toolbox</span>
         <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">What I reach for</h2>
       </div>
-      <Button asChild variant="outline" size="sm"><a href="/tools/">Full toolbox <span aria-hidden="true">→</span></a></Button>
+      <a href="/tools/" class={cn(buttonVariants({ variant: "outline", size: "sm" }))}>Full toolbox <span aria-hidden="true">→</span></a>
     </div>
     <div class="flex flex-wrap gap-2">
       {
@@ -232,8 +231,8 @@ const swatchClass: Record<string, string> = {
         <h2 class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">Where I've been</h2>
       </div>
       <div class="flex flex-wrap gap-2">
-        {cv.profile.pdf && <Button asChild variant="secondary" size="sm"><a href={cv.profile.pdf} download>Download PDF</a></Button>}
-        <Button asChild variant="outline" size="sm"><a href="/cv/">Full CV <span aria-hidden="true">→</span></a></Button>
+        {cv.profile.pdf && <a href={cv.profile.pdf} download class={cn(buttonVariants({ variant: "secondary", size: "sm" }))}>Download PDF</a>}
+        <a href="/cv/" class={cn(buttonVariants({ variant: "outline", size: "sm" }))}>Full CV <span aria-hidden="true">→</span></a>
       </div>
     </div>
     <Card className="gap-0 py-0 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -332,7 +331,7 @@ const swatchClass: Record<string, string> = {
         </p>
       </div>
       <div class="flex flex-wrap gap-2 *:max-sm:flex-1">
-        <Button asChild size="lg"><a href={`mailto:${site.email}`}>Email me</a></Button>
+        <a href={`mailto:${site.email}`} class={cn(buttonVariants({ size: "lg" }))}>Email me</a>
         <CopyEmailButton client:idle email={site.email} />
       </div>
     </Card>

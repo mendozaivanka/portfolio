@@ -1,4 +1,5 @@
 ---
+import { cn } from "@/lib/utils";
 /** Timpla's own section on the home page: two quiet maps, the provinces (farm) and Metro Manila's cafés (cup), each linking into its chapter. */
 import { ArrowUpRightIcon, MousePointerClickIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +40,7 @@ const links = [
         Timpla: Philippine coffee, from the farm to the cup
       </h2>
     </div>
-    <a href="/timpla/" class={buttonVariants({ variant: "outline", size: "sm" })}>Open Timpla <ArrowUpRightIcon /></a>
+    <a href="/timpla/" class={cn(buttonVariants({ variant: "outline", size: "sm" }))}>Open Timpla <ArrowUpRightIcon /></a>
   </div>
 
   <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
@@ -84,7 +85,7 @@ const links = [
           ))}
         </dl>
         <div class="flex flex-wrap gap-2">
-          {links.map((l, i) => <a href={l.href} class={buttonVariants({ variant: i === 0 ? "default" : "outline", size: "sm" })}>{l.label}</a>)}
+          {links.map((l, i) => <a href={l.href} class={cn(buttonVariants({ variant: i === 0 ? "default" : "outline", size: "sm" }))}>{l.label}</a>)}
         </div>
       </div>
     </div>

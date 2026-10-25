@@ -1,6 +1,7 @@
 ---
+import { cn } from "@/lib/utils";
 import Layout from "@/layouts/Layout.astro";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { site } from "@/data/site";
 ---
 
@@ -12,8 +13,8 @@ import { site } from "@/data/site";
     </h1>
     <p class="text-muted-foreground">That page doesn't exist, or it moved. The morning star points back home.</p>
     <div class="mt-2 flex flex-wrap gap-2">
-      <Button asChild size="lg"><a href="/">Back home</a></Button>
-      <Button asChild size="lg" variant="outline"><a href="/projects/">See projects</a></Button>
+      <a href="/" class={cn(buttonVariants({ size: "lg" }))}>Back home</a>
+      <a href="/projects/" class={cn(buttonVariants({ size: "lg", variant: "outline" }))}>See projects</a>
     </div>
   </section>
 </Layout>

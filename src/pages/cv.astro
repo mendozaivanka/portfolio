@@ -1,7 +1,8 @@
 ---
+import { cn } from "@/lib/utils";
 import Layout from "@/layouts/Layout.astro";
 import CvView from "@/components/CvView";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { site } from "@/data/site";
 import { getCv } from "@/lib/data";
@@ -64,7 +65,7 @@ const current = cv.experience.find((r) => r.end === null);
   <section class="reveal pt-12 print:hidden">
     <Card className="flex-row flex-wrap items-center justify-between gap-4 px-5">
       <p class="text-muted-foreground">Want the long version, or a role-specific one? Ask.</p>
-      <Button asChild><a href={`mailto:${site.email}`}>Email me</a></Button>
+      <a href={`mailto:${site.email}`} class={cn(buttonVariants())}>Email me</a>
     </Card>
   </section>
 </Layout>
