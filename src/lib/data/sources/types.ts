@@ -24,4 +24,12 @@ export interface DataSource {
     ncr(): Promise<unknown>;
     osmLayer(): Promise<unknown>;
   };
+
+  tanim: {
+    provinces(): Promise<unknown>;
+    national(): Promise<unknown>;
+    imports(): Promise<unknown>;
+    reported(): Promise<unknown>;
+    meta(): Promise<unknown>;
+  };
 }

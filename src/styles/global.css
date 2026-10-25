@@ -348,3 +348,12 @@ html[data-palette="kape"][data-theme="dark"] {
     --harvest: #8fb8cc;
   }
 }
+
+/* ───────── Tanim: the province receipt sheet ───────── */
+@keyframes tanim-sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes tanim-sheet-in { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes tanim-fade { from { opacity: 0; } to { opacity: 1; } }
+.tanim-backdrop { animation: tanim-fade 160ms ease-out; }
+.tanim-sheet { animation: tanim-sheet-up 220ms cubic-bezier(.2,.8,.2,1); }
+@media (min-width: 64rem) { .tanim-sheet { animation-name: tanim-sheet-in; } }
+@media (prefers-reduced-motion: reduce) { .tanim-sheet, .tanim-backdrop { animation: none; } }

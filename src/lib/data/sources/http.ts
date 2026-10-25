@@ -7,6 +7,7 @@
  *   GET {DATA_API_URL}/tools                → { setup, toolGroups, toolboxHighlights }
  *   GET {DATA_API_URL}/timpla/shops         → Shop[]        (and /timpla/independents, /points, /meta,
  *                                                            /timeline, /provenance, /ncr, /osm-layer)
+ *   GET {DATA_API_URL}/tanim/provinces      → TanimProvince[] (and /tanim/national, /imports, /reported, /meta)
  *
  * If DATA_API_TOKEN is set it's sent as `Authorization: Bearer …`. Responses are validated like local data.
  */
@@ -39,5 +40,12 @@ export const http: DataSource = {
     provenance: () => get("timpla/provenance"),
     ncr: () => get("timpla/ncr"),
     osmLayer: () => get("timpla/osm-layer"),
+  },
+  tanim: {
+    provinces: () => get("tanim/provinces"),
+    national: () => get("tanim/national"),
+    imports: () => get("tanim/imports"),
+    reported: () => get("tanim/reported"),
+    meta: () => get("tanim/meta"),
   },
 };

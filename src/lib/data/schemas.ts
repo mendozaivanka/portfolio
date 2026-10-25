@@ -189,3 +189,45 @@ export const ncrSchema = z.strictObject({
 });
 /** [lon, lat, name] */
 export const osmLayerSchema = z.array(z.tuple([z.number(), z.number(), z.string()]));
+
+// ───────── Tanim ─────────
+const yearMap = z.record(z.string().regex(/^\d{4}$/), z.number().nullable());
+const varietySeries = z.strictObject({ all: yearMap, robusta: yearMap, arabica: yearMap, excelsa: yearMap, liberica: yearMap });
+export const tanimProvinceSchema = z.strictObject({
+  psgc: z.number(), name: z.string(), region: z.string(), d: z.string(), cx: z.number(), cy: z.number(),
+  production: varietySeries, area: varietySeries, trees: varietySeries, farmgate: varietySeries,
+  cpi: z.record(z.string(), z.number()), fies: z.record(z.string(), z.number()),
+  note: z.string().optional(),
+});
+export type TanimProvince = z.infer<typeof tanimProvinceSchema>;
+export const tanimNationalSchema = z.strictObject({
+  years: z.array(z.string()),
+  production: varietySeries, area: varietySeries, trees: varietySeries, farmgate: varietySeries,
+  sua: z.record(z.string(), yearMap), ssr: yearMap, idr: yearMap,
+  valueOfProduction: z.strictObject({ current: yearMap, constant2018: yearMap }),
+  cpi: z.record(z.string(), z.number()), fies: z.record(z.string(), z.number()),
+  regions: z.array(z.strictObject({ name: z.string(), production: varietySeries, area: varietySeries, trees: varietySeries })),
+});
+export type TanimNational = z.infer<typeof tanimNationalSchema>;
+const sankeyNode = z.strictObject({ name: z.string(), y0: z.number(), y1: z.number(), value: z.number(), x: z.number(), w: z.number() });
+export const tanimImportsSchema = z.record(z.string(), z.strictObject({
+  flows: z.array(z.strictObject({ origin: z.string(), name: z.string(), form: z.string(), kg: z.number(), usd: z.number() })),
+  byForm: z.record(z.string(), z.strictObject({ kg: z.number(), usd: z.number() })),
+  sankey: z.strictObject({
+    width: z.number(), height: z.number(), unit: z.enum(["kg", "usd"]), total: z.number(),
+    origins: z.array(sankeyNode), forms: z.array(sankeyNode),
+    links: z.array(z.strictObject({ origin: z.string(), form: z.string(), value: z.number(), share: z.number(), d: z.string(), width: z.number() })),
+  }),
+}));
+export type TanimImports = z.infer<typeof tanimImportsSchema>;
+export const tanimReportedSchema = z.array(z.strictObject({ province: z.string(), text: z.string(), source: z.string(), date: z.string(), url: z.string() }));
+export type TanimReported = z.infer<typeof tanimReportedSchema>;
+export const tanimMetaSchema = z.strictObject({
+  builtAt: z.string(), retrievedAt: z.string(),
+  tables: z.record(z.string(), z.strictObject({ folder: z.string(), title: z.string(), updated: z.string().nullable() })),
+  checks: z.array(z.strictObject({ check: z.string(), national: z.number().nullable(), regions: z.number(), ok: z.boolean() })),
+  boundaries: z.strictObject({ source: z.string(), licence: z.string(), psgc: z.string(), features: z.number() }),
+  years: z.array(z.string()), latestYear: z.string(), provinces: z.number(), reporting: z.number(), importYears: z.array(z.string()),
+  box: z.strictObject({ w: z.number(), h: z.number() }),
+});
+export type TanimMeta = z.infer<typeof tanimMetaSchema>;

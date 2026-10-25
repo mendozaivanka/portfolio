@@ -17,7 +17,8 @@
     "timpla:data": "node scripts/build-timpla-data.ts",
     "data:export": "node scripts/export-data.ts",
     "check": "astro check",
-    "resume:pdf": "node scripts/build-resume-pdf.ts"
+    "resume:pdf": "node scripts/build-resume-pdf.ts",
+    "tanim:data": "node scripts/build-tanim-data.ts"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.0",

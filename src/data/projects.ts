@@ -384,10 +384,10 @@ export const projects: Project[] = [
     kind: "personal",
     categories: ["data", "automation"],
     description:
-      "A sourced map of Metro Manila's independent cafés: 329 of them, 108 specialty, with who roasts for whom, where the beans grow and when each place opened. Built from free, open data with an automated research pipeline; no star ratings, just receipts.",
-    summary: "A sourced map of Metro Manila's independent cafés: 329 of them, 108 specialty, and who roasts for whom.",
-    results: ["329 cafés", "108 specialty"],
-    tags: ["Data viz", "MapLibre", "Python", "Astro"],
+      "Philippine coffee from the province that grows it to the café that pours it. The Beans chapter maps every province's harvest since 2010 from the Philippine Statistics Authority's own counts; Shipped in shows what was imported and from where; the café map covers Metro Manila's 329 independent cafés, 108 specialty, with who roasts for whom. Free, open data only; no star ratings, just receipts.",
+    summary: "Philippine coffee from the farm to the cup: every province's harvest, what was shipped in, and Metro Manila's 329 independent cafés.",
+    results: ["82 provinces", "329 cafés"],
+    tags: ["Data viz", "MapLibre", "PSA OpenSTAT", "Python", "Astro"],
     tint: "rosas",
     preview: [
       "**timpla** · built 2026-10-21",
@@ -405,3 +405,4 @@ export const projects: Project[] = [
     },
   },
 ];
+

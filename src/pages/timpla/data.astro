@@ -1,5 +1,6 @@
 ---
 import TimplaLayout from "@/components/timpla/TimplaLayout.astro";
+import BeansFinePrint from "@/components/tanim/BeansFinePrint.astro";
 import { getTimplaMeta } from "@/lib/data";
 import { TIER_TEXT, CLASS_TEXT } from "@/lib/timpla";
 
@@ -20,7 +21,7 @@ const sources = [
 ];
 ---
 
-<TimplaLayout title="About the data" current="data" description="How Timpla decides which cafés to include, and where every number comes from.">
+<TimplaLayout title="About the data" current="data" description="How Timpla decides which cafés to include, how the coffee chapters count, and where every number comes from.">
   <article class="grid max-w-3xl gap-10 pt-10 text-[17px] leading-relaxed">
     <header>
       <span class="label-mono">Methods</span>
@@ -119,6 +120,8 @@ const sources = [
         }
       </ul>
     </section>
+
+    <BeansFinePrint />
 
     <section>
       <h2 class="font-serif text-3xl font-normal">Spot a mistake?</h2>

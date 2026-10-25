@@ -1,23 +1,32 @@
 ---
-/** Timpla's own section on the home page: the live map in an iframe, with the story and stats beside it. */
+/** Timpla's own section on the home page: two quiet maps, the provinces (farm) and Metro Manila's cafés (cup), each linking into its chapter. */
 import { ArrowUpRightIcon, MousePointerClickIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import type { Project } from "@/data/projects";
-import { getTimplaMeta } from "@/lib/data";
+import DotMap from "@/components/timpla/DotMap.astro";
+import { getTanimMeta, getTanimProvinces, getTimplaMeta } from "@/lib/data";
+import { binOf } from "@/lib/tanim";
 
 type Props = { project: Project };
 const { project } = Astro.props;
-const meta = await getTimplaMeta();
+const [meta, beans, provinces] = await Promise.all([getTimplaMeta(), getTanimMeta(), getTanimProvinces()]);
 const d = meta.directory;
+const y = beans.latestYear;
+const RAMP = ["var(--rosas-1)", "var(--rosas-2)", "var(--rosas-3)", "var(--rosas-4)", "var(--rosas-5)", "var(--tier-acclaimed)"];
+const ranked = [...provinces].sort((a, b) => (b.production.all[y] ?? 0) - (a.production.all[y] ?? 0));
+const top = ranked[0];
+const national = provinces.reduce((s, p) => s + (p.production.all[y] ?? 0), 0);
+const topShare = Math.round(((top.production.all[y] ?? 0) / national) * 100);
 const stats = [
+  { value: beans.reporting, label: "coffee provinces" },
   { value: d.shops, label: "independent cafés" },
-  { value: meta.shops, label: "specialty cafés" },
   { value: meta.roasterLinks, label: "roaster links traced" },
 ];
 const links = [
   { label: "Open Timpla", href: "/timpla/" },
-  { label: "Full-screen map", href: "/timpla/map/" },
+  { label: "Every province", href: "/timpla/beans/" },
+  { label: "Café map", href: "/timpla/map/" },
   { label: "About the data", href: "/timpla/data/" },
 ];
 ---
@@ -27,55 +36,55 @@ const links = [
     <div>
       <span class="label-mono">Side project · data viz · {project.period ?? project.year}</span>
       <h2 id="timpla-heading" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">
-        Timpla: Metro Manila's coffee, mapped
+        Timpla: Philippine coffee, from the farm to the cup
       </h2>
     </div>
     <a href="/timpla/" class={buttonVariants({ variant: "outline", size: "sm" })}>Open Timpla <ArrowUpRightIcon /></a>
   </div>
 
   <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-    <div class="relative h-[min(72dvh,620px)] min-h-[420px] bg-muted">
-      <iframe
-        src="/timpla/embed/"
-        title="Timpla: interactive map of independent cafés in Metro Manila"
-        loading="lazy"
-        class="absolute inset-0 size-full border-0"
-      ></iframe>
+    <div class="grid md:grid-cols-2">
+      <a href="/timpla/beans/" class="group relative flex flex-col gap-3 border-b border-border bg-muted/40 p-5 md:border-r md:border-b-0" aria-label={`Open the Beans chapter: ${top.name} grew ${topShare} percent of the country's ${y} coffee`}>
+        <span class="label-mono">The farm · every province, {y}</span>
+        <svg viewBox={"0 0 " + beans.box.w + " " + beans.box.h} class="mx-auto block h-[min(60dvh,520px)] min-h-[380px] w-auto max-w-full" role="img" aria-hidden="true">
+          {provinces.map((p) => (
+            <path d={p.d} fill={RAMP[binOf("production", p.production.all[y])]} stroke="var(--card)" stroke-width="0.7"><title>{p.name}: {(p.production.all[y] ?? 0).toLocaleString("en", { maximumFractionDigits: 0 })} t</title></path>
+          ))}
+        </svg>
+        <span class="text-[13px] text-muted-foreground"><b class="font-semibold text-foreground">{top.name}</b> grew {topShare} % of the country's green coffee in {y}. <span class="font-medium text-primary-strong group-hover:underline">Every province →</span></span>
+      </a>
+      <a href="/timpla/map/" class="group flex flex-col gap-3 bg-muted/40 p-5" aria-label={`Open the café map: ${d.shops} independent cafés in Metro Manila`}>
+        <span class="label-mono">The cup · Metro Manila's cafés</span>
+        <div class="mx-auto flex h-[min(60dvh,520px)] min-h-[380px] w-full max-w-[410px] items-center">
+          <DotMap class="mx-auto max-h-full w-auto" label={`Metro Manila with ${meta.mapped} specialty café branches; most cluster in Makati, Taguig and Quezon City.`} />
+        </div>
+        <span class="text-[13px] text-muted-foreground"><b class="font-semibold text-foreground">{meta.shops} specialty cafés</b> among {d.shops} independents, most in Makati, Taguig and Quezon City. <span class="font-medium text-primary-strong group-hover:underline">Café map →</span></span>
+      </a>
     </div>
     <div class="grid gap-5 border-t border-border p-5 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:p-6">
       <div class="grid content-start gap-3">
         <p class="text-muted-foreground">
-          A sourced map of Metro Manila's independent cafés, {meta.shops} of them specialty: who roasts for whom, where
-          the beans grow and when each place opened. Built from free, open data with an automated research pipeline; no
-          star ratings, just receipts.
+          Where the Philippines' coffee grows, what is shipped in, and where Metro Manila drinks it: every province's harvest
+          since 2010 from the Philippine Statistics Authority's own counts, and {d.shops} independent cafés, {meta.shops} of them
+          specialty, with who roasts for whom. Built from free, open data; no star ratings, just receipts.
         </p>
         <p class="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground">
           <MousePointerClickIcon className="size-3.5" aria-hidden="true" />
-          Drag to explore, tap a dot for its details. Zoom with ⌘/Ctrl + scroll, or two fingers.
+          Tap either map to open it: the provinces lead to the Beans chapter, the cafés to the full café map.
         </p>
-        <div class="flex flex-wrap gap-1.5">
-          {project.tags.map((t) => <Badge variant="outline">{t}</Badge>)}
-        </div>
+        <div class="flex flex-wrap gap-1.5">{project.tags.map((t) => <Badge variant="outline">{t}</Badge>)}</div>
       </div>
       <div class="grid content-start gap-4">
         <dl class="grid grid-cols-3 gap-3">
-          {
-            stats.map((s) => (
-              <div class="grid gap-0.5">
-                <dt class="order-2 text-xs leading-tight text-muted-foreground">{s.label}</dt>
-                <dd class="order-1 font-serif text-3xl leading-none tabular-nums">{s.value}</dd>
-              </div>
-            ))
-          }
+          {stats.map((s) => (
+            <div class="grid gap-0.5">
+              <dt class="order-2 text-xs leading-tight text-muted-foreground">{s.label}</dt>
+              <dd class="order-1 font-serif text-3xl leading-none tabular-nums">{s.value}</dd>
+            </div>
+          ))}
         </dl>
         <div class="flex flex-wrap gap-2">
-          {
-            links.map((l, i) => (
-              <a href={l.href} class={buttonVariants({ variant: i === 0 ? "default" : "ghost", size: "sm" })}>
-                {l.label}
-              </a>
-            ))
-          }
+          {links.map((l, i) => <a href={l.href} class={buttonVariants({ variant: i === 0 ? "default" : "ghost", size: "sm" })}>{l.label}</a>)}
         </div>
       </div>
     </div>

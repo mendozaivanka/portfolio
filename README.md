@@ -47,7 +47,7 @@ npx shadcn@latest add <component>
 
 They land in `src/components/ui/` and pick up the Tala Rosa theme automatically through the CSS variables in `global.css`.
 
-## Case studies, résumé PDF and the assistant
+## Case studies and résumé PDF
 
 - **Case studies**: give a project a `caseStudy` in `src/data/projects.ts` (problem, architecture stages, solution,
   evals) and it gets a page at `/projects/<slug>/`, a "Read the case study" button and a line on the résumé.
@@ -56,9 +56,6 @@ They land in `src/components/ui/` and pick up the Tala Rosa theme automatically 
   in the parent window). The iframe needs same-origin framing allowed, see `render.yaml` headers.
 - **Résumé PDF**: `/resume/` is the CV laid out for A4. After changing `src/data/cv.ts`, run `npm run resume:pdf` and
   commit the PDF it writes to `public/` (path from `cv.profile.pdf`). First time: `npx playwright install chromium`.
-- **"Ask about me" assistant**: knowledge is built from the CV and projects into `/assistant-knowledge.json`. With
-  `PUBLIC_CHAT_API_URL` empty the widget answers offline in the browser; deploy `chat-worker/` (free Cloudflare
-  Workers AI, see its README) and set the variable for real LLM answers.
 
 ## Configuration
 

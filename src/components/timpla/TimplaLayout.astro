@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import ThemeMenu from "@/components/ThemeMenu";
 import { getTimplaMeta } from "@/lib/data";
 
-type Props = { title: string; description?: string; current?: "home" | "map" | "cafes" | "data" };
+type Props = { title: string; description?: string; current?: "home" | "map" | "cafes" | "beans" | "shipped" | "data" };
 const { title, description, current } = Astro.props;
 const meta = await getTimplaMeta();
 
@@ -11,6 +11,8 @@ const links = [
   { id: "home", label: "Overview", href: "/timpla/" },
   { id: "map", label: "Map", href: "/timpla/map/" },
   { id: "cafes", label: "Cafés", href: "/timpla/cafes/" },
+  { id: "beans", label: "Beans", href: "/timpla/beans/" },
+  { id: "shipped", label: "Shipped in", href: "/timpla/shipped/" },
   { id: "data", label: "About the data", href: "/timpla/data/" },
 ];
 ---

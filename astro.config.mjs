@@ -44,6 +44,14 @@ export default defineConfig({
   adapter: await loadAdapter(env.DEPLOY_ADAPTER),
   // `/projects/` style URLs work on every static host without rewrites.
   trailingSlash: "always",
+  // Tanim became Timpla's Beans and Shipped-in chapters; old links keep working
+  redirects: {
+    "/tanim/": "/timpla/beans/",
+    "/tanim/country/": "/timpla/country/",
+    "/tanim/shipped/": "/timpla/shipped/",
+    "/tanim/tour/": "/timpla/tour/",
+    "/tanim/data/": "/timpla/data/#beans",
+  },
   integrations: [react(), sitemap()],
   // Typed, validated settings for the code (import from "astro:env/server"). A wrong value fails the build.
   env: {
@@ -51,8 +59,6 @@ export default defineConfig({
       DATA_SOURCE: envField.enum({ context: "server", access: "public", values: ["local", "http"], default: "local" }),
       DATA_API_URL: envField.string({ context: "server", access: "public", optional: true, url: true }),
       DATA_API_TOKEN: envField.string({ context: "server", access: "secret", optional: true }),
-      // The "Ask about me" chat worker (chat-worker/). Empty: the widget answers offline from the CV.
-      PUBLIC_CHAT_API_URL: envField.string({ context: "client", access: "public", optional: true, url: true }),
     },
   },
   vite: {

@@ -8,8 +8,12 @@ Astro 7 static site + React 19 islands + shadcn/ui (Tailwind v4). Deployed on Re
   and a getter in `src/lib/data/index.ts`.
 - **New field** on existing content → update the TS type *and* the strict zod schema; `astro check` catches mismatches.
 - **Config** comes from the environment (`.env.example` lists all): `SITE_URL`, `DEPLOY_ADAPTER`, `DATA_SOURCE`,
-  `DATA_API_URL`, `DATA_API_TOKEN`, `PUBLIC_CHAT_API_URL`. Don't hard-code URLs or hosts.
+  `DATA_API_URL`, `DATA_API_TOKEN`. Don't hard-code URLs or hosts.
 - **Colours**: edit `src/data/tokens.ts` only; the build fails on WCAG contrast regressions.
 - **Timpla data**: regenerate with `npm run timpla:data` (reads `../cafe-data`); don't hand-edit the JSON.
+- **Timpla's coffee chapters** (Beans `/timpla/beans/`, `/timpla/country/`, `/timpla/tour/`, Shipped in `/timpla/shipped/`;
+  formerly the separate Tanim site, `/tanim/*` now redirects): `npm run tanim:data` derives `src/data/tanim/*.json` from
+  `../tanim-data` (PSA pulls in `raw/`, refreshed by `tanim-data/scripts/fetch_psa.py`). Read through `getTanim*`.
+  Astro's compiler misreads `x! / y` as a regex in `.astro` files: write `(x ?? 0) / y`.
 - **CV changed** → `npm run resume:pdf` and commit the regenerated PDF. The phone number stays off the public site.
 - Verify with `npm run build` (type-check + content validation + build). Commit/push only when asked.

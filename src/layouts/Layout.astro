@@ -3,8 +3,6 @@ import "@/styles/global.css";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { Toaster } from "@/components/ui/sonner";
-import AskWidget from "@/components/AskWidget";
-import { PUBLIC_CHAT_API_URL } from "astro:env/client";
 import { site } from "@/data/site";
 import { light, dark } from "@/data/tokens";
 
@@ -66,8 +64,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     </main>
     <Footer />
     <Toaster client:load />
-    {/* Portfolio pages only: side projects with their own header (Timpla) don't get the assistant */}
-    {!hideHeader && <AskWidget client:idle name={site.name} email={site.email} apiUrl={PUBLIC_CHAT_API_URL} />}
 
     <script>
       // Fade sections in as they scroll into view. Nothing is hidden unless this script

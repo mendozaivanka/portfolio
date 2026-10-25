@@ -1,6 +1,6 @@
 /**
  * The default source: the files in src/data/, committed to git. Edit those files to change the site.
- * Timpla's JSON is regenerated from ../cafe-data by `npm run timpla:data`.
+ * Timpla's JSON is regenerated from ../cafe-data by `npm run timpla:data`; the Beans and Shipped-in chapters' from ../tanim-data by `npm run tanim:data`.
  */
 import type { DataSource } from "./types";
 import { projects } from "@/data/projects";
@@ -23,5 +23,12 @@ export const local: DataSource = {
     provenance: json(() => import("@/data/timpla/provenance.json")),
     ncr: json(() => import("@/data/timpla/ncr.json")),
     osmLayer: json(() => import("@/data/timpla/osm_layer.json")),
+  },
+  tanim: {
+    provinces: json(() => import("@/data/tanim/provinces.json")),
+    national: json(() => import("@/data/tanim/national.json")),
+    imports: json(() => import("@/data/tanim/imports.json")),
+    reported: json(() => import("@/data/tanim/reported.json")),
+    meta: json(() => import("@/data/tanim/meta.json")),
   },
 };

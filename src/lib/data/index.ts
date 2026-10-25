@@ -17,6 +17,7 @@ import { http } from "./sources/http";
 import {
   cvSchema, independentSchema, ncrSchema, osmLayerSchema, pointSchema, projectsSchema, provenanceSchema, shopSchema,
   timelineSchema, timplaMetaSchema, toolsSchema,
+  tanimProvinceSchema, tanimNationalSchema, tanimImportsSchema, tanimReportedSchema, tanimMetaSchema,
 } from "./schemas";
 
 const SOURCES: Record<string, DataSource> = { local, http };
@@ -70,3 +71,11 @@ export const getTimeline = () => load("timpla.timeline", timelineSchema, t.timel
 export const getProvenance = () => load("timpla.provenance", provenanceSchema, t.provenance);
 export const getNcr = () => load("timpla.ncr", ncrSchema, t.ncr);
 export const getOsmLayer = () => load("timpla.osmLayer", osmLayerSchema, t.osmLayer);
+
+// ───────── Tanim ─────────
+const n = source.tanim;
+export const getTanimProvinces = () => load("tanim.provinces", tanimProvinceSchema.array(), n.provinces);
+export const getTanimNational = () => load("tanim.national", tanimNationalSchema, n.national);
+export const getTanimImports = () => load("tanim.imports", tanimImportsSchema, n.imports);
+export const getTanimReported = () => load("tanim.reported", tanimReportedSchema, n.reported);
+export const getTanimMeta = () => load("tanim.meta", tanimMetaSchema, n.meta);
