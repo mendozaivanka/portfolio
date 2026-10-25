@@ -32,7 +32,7 @@ const links = [
 ---
 
 <section class="reveal pt-10 sm:pt-14" id="timpla" aria-labelledby="timpla-heading">
-  <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
       <span class="label-mono">Side project · data viz · {project.period ?? project.year}</span>
       <h2 id="timpla-heading" class="font-serif text-[clamp(1.625rem,3.4vw,2rem)] font-medium tracking-tight">
@@ -44,7 +44,7 @@ const links = [
 
   <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
     <div class="grid md:grid-cols-2">
-      <a href="/timpla/beans/" class="group relative flex flex-col gap-3 border-b border-border bg-muted/40 p-5 md:border-r md:border-b-0" aria-label={`Open the Beans chapter: ${top.name} grew ${topShare} percent of the country's ${y} coffee`}>
+      <a href="/timpla/beans/" class="group relative flex flex-col gap-4 border-b border-border bg-muted/40 p-5 sm:p-6 md:border-r md:border-b-0" aria-label={`Open the Beans chapter: ${top.name} grew ${topShare} percent of the country's ${y} coffee`}>
         <span class="label-mono">The farm · every province, {y}</span>
         <svg viewBox={"0 0 " + beans.box.w + " " + beans.box.h} class="mx-auto block h-[min(60dvh,520px)] min-h-[380px] w-auto max-w-full" role="img" aria-hidden="true">
           {provinces.map((p) => (
@@ -53,7 +53,7 @@ const links = [
         </svg>
         <span class="text-[13px] text-muted-foreground"><b class="font-semibold text-foreground">{top.name}</b> grew {topShare} % of the country's green coffee in {y}. <span class="font-medium text-primary-strong group-hover:underline">Every province →</span></span>
       </a>
-      <a href="/timpla/map/" class="group flex flex-col gap-3 bg-muted/40 p-5" aria-label={`Open the café map: ${d.shops} independent cafés in Metro Manila`}>
+      <a href="/timpla/map/" class="group flex flex-col gap-4 bg-muted/40 p-5 sm:p-6" aria-label={`Open the café map: ${d.shops} independent cafés in Metro Manila`}>
         <span class="label-mono">The cup · Metro Manila's cafés</span>
         <div class="mx-auto flex h-[min(60dvh,520px)] min-h-[380px] w-full max-w-[410px] items-center">
           <DotMap class="mx-auto max-h-full w-auto" label={`Metro Manila with ${meta.mapped} specialty café branches; most cluster in Makati, Taguig and Quezon City.`} />
@@ -61,8 +61,8 @@ const links = [
         <span class="text-[13px] text-muted-foreground"><b class="font-semibold text-foreground">{meta.shops} specialty cafés</b> among {d.shops} independents, most in Makati, Taguig and Quezon City. <span class="font-medium text-primary-strong group-hover:underline">Café map →</span></span>
       </a>
     </div>
-    <div class="grid gap-5 border-t border-border p-5 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:p-6">
-      <div class="grid content-start gap-3">
+    <div class="grid gap-6 border-t border-border p-5 sm:p-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+      <div class="grid content-start gap-4">
         <p class="text-muted-foreground">
           Where the Philippines' coffee grows, what is shipped in, and where Metro Manila drinks it: every province's harvest
           since 2010 from the Philippine Statistics Authority's own counts, and {d.shops} independent cafés, {meta.shops} of them
@@ -75,7 +75,7 @@ const links = [
         <div class="flex flex-wrap gap-1.5">{project.tags.map((t) => <Badge variant="outline">{t}</Badge>)}</div>
       </div>
       <div class="grid content-start gap-4">
-        <dl class="grid grid-cols-3 gap-3">
+        <dl class="grid grid-cols-3 gap-4">
           {stats.map((s) => (
             <div class="grid gap-0.5">
               <dt class="order-2 text-xs leading-tight text-muted-foreground">{s.label}</dt>
@@ -84,7 +84,7 @@ const links = [
           ))}
         </dl>
         <div class="flex flex-wrap gap-2">
-          {links.map((l, i) => <a href={l.href} class={buttonVariants({ variant: i === 0 ? "default" : "ghost", size: "sm" })}>{l.label}</a>)}
+          {links.map((l, i) => <a href={l.href} class={buttonVariants({ variant: i === 0 ? "default" : "outline", size: "sm" })}>{l.label}</a>)}
         </div>
       </div>
     </div>

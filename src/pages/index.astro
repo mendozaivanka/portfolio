@@ -93,12 +93,12 @@ const swatchClass: Record<string, string> = {
           }
         </ul>
         <div class="flex flex-wrap gap-2">
-          <Button asChild size="lg"><a href="/projects/">See my work</a></Button>
+          <Button asChild size="lg" variant="outline"><a href="/projects/">See my work</a></Button>
           <Button asChild size="lg" variant="outline"><a href="#contact">Get in touch</a></Button>
           {
             cv.profile.pdf && (
-              <Button asChild size="lg" variant="ghost">
-                <a href={cv.profile.pdf} download>Résumé (PDF)</a>
+              <Button asChild size="lg" variant="outline">
+                <a href={cv.profile.pdf} download>CV</a>
               </Button>
             )
           }

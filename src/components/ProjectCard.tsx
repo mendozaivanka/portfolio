@@ -26,7 +26,8 @@ const tintClass: Record<Tint, string> = {
  *   links     (projects page only, when any)
  */
 const PREVIEW_LINES = 4;
-const titleClass = "font-heading text-xl leading-snug font-medium min-h-[calc(2*1.375*1.25rem)]";
+// No reserved second line: one-line titles would leave a gap above the description
+const titleClass = "font-heading text-xl leading-snug font-medium";
 
 /** Turn the preview mini-markup (**rose**, ==gold==) into elements. Unbalanced markers render as plain text. */
 function renderPreviewLine(line: string): ReactNode[] {
@@ -53,7 +54,7 @@ function Preview({ project }: { project: Project }) {
   const lines = [...project.preview.slice(0, PREVIEW_LINES)];
   while (lines.length < PREVIEW_LINES) lines.push("");
   return (
-    <div className={cn("mx-3 shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])} aria-hidden="true">
+    <div className={cn("mx-(--card-spacing) shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])} aria-hidden="true">
       <WindowBar />
       <div className="overflow-x-auto px-3.5 pt-3 pb-3.5 font-mono text-xs leading-[1.75] whitespace-pre text-foreground">
         {lines.map((line, i) => (
@@ -81,7 +82,7 @@ function WindowBar() {
 function MediaPreview({ project }: { project: Project }) {
   const media = project.media!;
   return (
-    <figure className={cn("mx-3 shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])}>
+    <figure className={cn("mx-(--card-spacing) shrink-0 overflow-hidden rounded-md border border-border", tintClass[project.tint])}>
       <WindowBar />
       <img
         className="block h-[110px] w-full object-cover object-[60%_45%]"
@@ -192,7 +193,7 @@ export default function ProjectCard({ project, variant = "full", headingLevel = 
       </CardHeader>
       <Footer project={project} />
       {(caseStudyHref || links.length > 0) && (
-        <CardFooter className="flex-wrap gap-2 border-t-0 pt-0">
+        <CardFooter className="flex-wrap gap-2 border-t-0 bg-transparent px-(--card-spacing) pt-0 pb-(--card-spacing)">
           {caseStudyHref && (
             <Button asChild variant="secondary" size="sm">
               <a href={caseStudyHref}>
